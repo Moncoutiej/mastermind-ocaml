@@ -40,8 +40,21 @@ val toutes_reponses : (int * int) list
 *)
 val reponse : t -> t -> (int * int) option
 end =
-struct 
+  struct 
+    type pion = int;;
+    type t = pion list;;
 
+  let nombre_pions = 4;;
+  let couleurs_possibles = [1;2;3;4];;
+       
+  let rec compare code1 code2 = 0;;
+   (* match (code1,code2) with
+    | ([],[]) -> 0
+    | (a :: ls1,b :: ls2) -> if a = b then
+                               compare ls1 ls2
+                             else
+   à compléter avec la fonction de comparaison*)
+       
 let rec string_of_code_rec t = 
 	"|"^
 	match t with
@@ -82,4 +95,38 @@ let rec code_of_string s =
 			| (Some(a),Some(b)) -> Some(a :: b)
 			| _ -> None;;
 
+let tous = [[]];;
+
+let toutes_reponses = [(1,2)];;
+
+  let rec nb_bonne_rep code1 code2 =
+    match (code1,code2) with
+    | ([],[]) -> (0,[],[])
+    | (a :: ls1,b :: ls2) -> let (x,y,z) = nb_bonne_rep ls1 ls2 in
+                             if a = b then
+                               (x+1,y,z)
+                             else
+                               (x,a::y,b::z);;
+
+  let rec supprime_un x l =
+    match l with
+    | [] -> (0,l)
+    | valeur :: l -> if valeur = x then
+                       (1,l)
+                     else
+                       let res = supprime_un x l in
+                       (fst(res),valeur :: snd(res));;
+  
+  let rec nb_mauvaise_rep code1 code2 acc =
+    match code1 with
+    | [] -> acc
+    | a :: ls -> let res = supprime_un a code2 in
+                 nb_mauvaise_rep ls (snd(res)) (acc+fst(res));;
+               
+
+  let reponse code vrai_code = if (List.length code = List.length vrai_code) then
+                                 let (x,y,z) = nb_bonne_rep code vrai_code in
+                                 Some(x,nb_mauvaise_rep y z 0)
+                               else
+                                 None;;
 end ;;
