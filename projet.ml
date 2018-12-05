@@ -9,8 +9,11 @@ let creationjoueurs mode = if mode then
 {nom = read_line (print_string "Entrer votre nom : "); points = 0; humain = true} :: [{nom = "Ordinateur"; points = 0; humain =false}] else 
 {nom = read_line (print_string "Entrer votre nom joueur 2 : "); points = 0; humain = true} :: [{nom = read_line (print_string "Entrer votre nom joueur 1 : "); points = 0; humain =true}];;
 
-let commence listejoueurs = if Random.bool() then listejoueurs else match listejoueurs with
-																    |e::t  -> t;;
+let commence listejoueurs = if Random.bool() then match listejoueurs with
+                                                  | e :: t -> [e]
+                            else match listejoueurs with
+                                  | e :: t -> t;;
+
 
 
 let rec code_egaux code1 code2 acc =
@@ -27,4 +30,3 @@ let rec code_egaux code1 code2 acc =
 end;;
 open Mastermind;;
 
-Mastermind.creationjoueurs false;;
