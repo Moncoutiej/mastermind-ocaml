@@ -44,8 +44,18 @@ end =
     type pion = int;;
     type t = pion list;;
 
-  let nombre_pions = 4;;
-  let couleurs_possibles = [1;2;3;4];;
+  let nombre_pions =  read_int (print_string "Entrez le nombre de pion par code :";print_newline ());;
+
+let rec faire_liste_acc taille acc = if taille = 0 then
+                             		  []
+                             		 else 
+                             		  acc :: faire_liste_acc (taille-1) (acc +1);;
+
+let faire_liste taille = faire_liste_acc taille 0;;
+
+
+
+  let couleurs_possibles = faire_liste (read_int (print_string "Entrez un nombre de couleurs possibles entre 0 et 8 :";print_newline ()));;
        
   let rec compare code1 code2 = 0;;
    (* match (code1,code2) with
