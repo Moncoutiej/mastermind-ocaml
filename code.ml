@@ -55,20 +55,18 @@ end =
                              else
    à compléter avec la fonction de comparaison*)
        
-let rec string_of_code_rec t = 
+let rec string_of_code t = 
 	"|"^
 	match t with
 	| [] -> ""
-	| 0 :: liste -> "orange"^string_of_code_rec liste
-	| 1 :: liste -> "rouge"^string_of_code_rec liste
-	| 2 :: liste -> "vert"^string_of_code_rec liste
-	| 3 :: liste -> "bleu"^string_of_code_rec liste
-	| 4 :: liste -> "jaune"^string_of_code_rec liste
-	| 5 :: liste -> "violet"^string_of_code_rec liste
-	| 6 :: liste -> "blanc"^string_of_code_rec liste
-	| 7 :: liste -> "cyan"^string_of_code_rec liste;;
-
-let string_of_code t = string_of_code_rec t ^ "|";;
+	| 0 :: liste -> "orange"^string_of_code liste
+	| 1 :: liste -> "rouge"^string_of_code liste
+	| 2 :: liste -> "vert"^string_of_code liste
+	| 3 :: liste -> "bleu"^string_of_code liste
+	| 4 :: liste -> "jaune"^string_of_code liste
+	| 5 :: liste -> "violet"^string_of_code liste
+	| 6 :: liste -> "blanc"^string_of_code liste
+	| 7 :: liste -> "cyan"^string_of_code liste;;
 
 let num_of_couleur_opt s = 
 	match s with
