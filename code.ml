@@ -83,6 +83,3 @@ let rec code_of_string s =
 			| _ -> None;;
 
 end ;;
-
-
-"|rouge|bleu|gfgff|gg|"
