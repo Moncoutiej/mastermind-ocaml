@@ -26,7 +26,7 @@ val filtre : int -> (Code.t * (int * int) option) -> Code.t list -> Code.t list
 end =
   struct
 
-
+    let nombre_methodes = 1;;
     
     let choix methode essais possibles =
       match methode with
@@ -34,7 +34,7 @@ end =
 
     let rec code_egaux code1 code2 acc =
       match (code1,code2) with
-      | ([],[]) -> acc = 4
+      | ([],[]) -> acc = Code.nombre_pions
       | (a :: ls1,b :: ls2) -> if a = b then
                                  code_egaux ls1 ls2 (acc+1)  
                                else
@@ -61,7 +61,7 @@ end =
     
     let filtre methode der_code possibles =
       match methode with
-      | _ -> naif fst(der_code) snd(der_code) (supprime_un (fst(der_code)) possibles);;
+      | _ -> filtre_naif (fst(der_code)) (snd(der_code)) (supprime_un (fst(der_code)) possibles);;
 
   
   end ;;
