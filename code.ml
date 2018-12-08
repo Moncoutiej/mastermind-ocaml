@@ -46,16 +46,15 @@ end =
 
   let nombre_pions =  read_int (print_string "Entrez le nombre de pion par code :";print_newline ());;
 
-let rec faire_liste_acc taille acc = if taille = 0 then
-                             		  []
-                             		 else 
-                             		  acc :: faire_liste_acc (taille-1) (acc +1);;
+  let rec zero_jusque_rec nb acc =
+    match (nb-1) with
+    | x when x < 0 -> acc
+    | 0 -> 0 :: acc
+    | x when x > 0 -> zero_jusque_rec x (x :: acc);;
+  
+  let zero_jusque nb = zero_jusque_rec nb [];;
 
-let faire_liste taille = faire_liste_acc taille 0;;
-
-
-
-  let couleurs_possibles = faire_liste (read_int (print_string "Entrez un nombre de couleurs possibles entre 0 et 8 :";print_newline ()));;
+  let couleurs_possibles = zero_jusque (read_int (print_string "Entrez un nombre de couleurs possibles entre 0 et 8 :";print_newline ()));;
        
   let rec compare code1 code2 = 0;;
    (* match (code1,code2) with
@@ -103,7 +102,33 @@ let rec code_of_string s =
 			| (Some(a),Some(b)) -> Some(a :: b)
 			| _ -> None;;
 
-let tous = [[]];;
+let rec code_initiale nb_pion acc=
+  match nb_pion with
+  | 0 -> acc
+  | _ -> code_initiale (nb_pion-1) (0 :: acc);;
+
+let rec nouveau_code couleur_max code = 
+  match code with
+  | [] ->  (false,[])
+  | x :: ls when x = couleur_max -> let (a,b) = nouveau_code couleur_max ls in
+                                    (a,(0 :: b))
+  | x :: ls -> (true,(x+1 :: ls));;
+
+let rec creation_de_tout_code couleur_max acc =
+  let (a,b) = (nouveau_code couleur_max (List.hd acc)) in
+                  if a then
+                    creation_de_tout_code couleur_max (b :: acc)
+                  else
+                    acc;;
+
+let rec fin_liste liste =
+  match liste with
+  | [] -> failwith "fin_liste"
+  | v :: [] -> v
+  | v :: ls -> fin_liste ls;;
+
+let tous = let code = code_initiale nombre_pions [] in
+           creation_de_tout_code (fin_liste couleurs_possibles) ([code]);;
 
 let toutes_reponses = [(1,2)];;
 
