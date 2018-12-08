@@ -130,7 +130,14 @@ let rec fin_liste liste =
 let tous = let code = code_initiale nombre_pions [] in
            creation_de_tout_code (fin_liste couleurs_possibles) ([code]);;
 
-let toutes_reponses = [(1,2)];;
+let rec creation_de_toutes_reponses nb_pion acc =
+  match acc with
+  | [] -> failwith "creation_de_toutes_reponses 1"
+  | (x,y) :: ls when x < 0 -> failwith "creation_de_toutes_reponses 2"
+  | (x,y) :: ls when x > 0 -> creation_de_toutes_reponses nb_pion (((x-1),(y+1)) :: acc)
+  | (x,y) :: ls when x = 0 -> acc;;
+
+let toutes_reponses = creation_de_toutes_reponses nombres_pions [(nombres_pions,0)];;
 
   let rec nb_bonne_rep code1 code2 =
     match (code1,code2) with
