@@ -102,10 +102,10 @@ let rec code_of_string s =
 			| (Some(a),Some(b)) -> Some(a :: b)
 			| _ -> None;;
 
-let rec code_initiale nb_pion acc=
+let rec code_initial nb_pion acc=
   match nb_pion with
   | 0 -> acc
-  | _ -> code_initiale (nb_pion-1) (0 :: acc);;
+  | _ -> code_initial (nb_pion-1) (0 :: acc);;
 
 let rec nouveau_code couleur_max code = 
   match code with
@@ -127,17 +127,23 @@ let rec fin_liste liste =
   | v :: [] -> v
   | v :: ls -> fin_liste ls;;
 
-let tous = let code = code_initiale nombre_pions [] in
-           creation_de_tout_code (fin_liste couleurs_possibles) ([code]);;
+let tous = let code = code_initial nombre_pions [] in
+           creation_de_tout_code (fin_liste couleurs_possibles) ([code]);; 
+
+let rec nouvel_reponse nb_pion reponse =
+  match reponse with
+  | (a,b) when a = nb_pion -> (false,reponse)
+  | (a,b) when (a+b) = nb_pion -> (true,((a+1),0))
+  | (a,b) -> (true,(a,(b+1)));;
 
 let rec creation_de_toutes_reponses nb_pion acc =
-  match acc with
-  | [] -> failwith "creation_de_toutes_reponses 1"
-  | (x,y) :: ls when x < 0 -> failwith "creation_de_toutes_reponses 2"
-  | (x,y) :: ls when x > 0 -> creation_de_toutes_reponses nb_pion (((x-1),(y+1)) :: acc)
-  | (x,y) :: ls when x = 0 -> acc;;
+  let (a,b) = (nouvel_reponse nb_pion (List.hd acc)) in
+                  if a then
+                    creation_de_toutes_reponses nb_pion (b :: acc)
+                  else
+                    acc;;
 
-let toutes_reponses = creation_de_toutes_reponses nombres_pions [(nombres_pions,0)];;
+let toutes_reponses = creation_de_toutes_reponses nombre_pions [(0,0)];;
 
   let rec nb_bonne_rep code1 code2 =
     match (code1,code2) with
