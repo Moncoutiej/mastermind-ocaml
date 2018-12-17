@@ -77,7 +77,7 @@ let rec string_of_code t =
 	| 7 :: liste -> "cyan"^string_of_code liste;;
 
 (** Transforme une couleur sous forme de string en numéro
-* @param s la chaine de caractère décrivant une couleur
+* @param la chaine de caractère décrivant une couleur
 * @return le numéro associé à la couleur en option,
   donc [None] si la couleur en entrée est mal écrite ou qu'elle nexiste pas
 *)
