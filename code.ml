@@ -63,6 +63,10 @@ end =
 *)
   let zero_jusque nb = zero_jusque_rec nb [];;
 
+  (** demande à l'utilisateur le nombre de couleurs possibles
+* @return le nombre de couleurs possibles entre 0 et 7,
+ si l'utilisateur ne rentre pas un nombre entre 0 et 7 il lui est demandé de rerentrer son nombre
+*)
   let rec demande_utilisateur = fun () -> let v = read_int (print_string "Entrez un nombre de couleurs possibles entre 0 et 7 :";print_newline ())
                              in if v >= 0 && v <=7 then
                                   v 
