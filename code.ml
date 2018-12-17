@@ -46,24 +46,38 @@ end =
 
   let nombre_pions =  read_int (print_string "Entrez le nombre de pion par code :";print_newline ());;
 
+  (** Crée une liste de 0 à (n-1)
+* @param nb la longueur de la liste voulue
+* @param acc la liste créé
+* @return la liste de 0 jusqu'à (nb-1) ou la liste vide si nb<0
+*)
   let rec zero_jusque_rec nb acc =
     match (nb-1) with
     | x when x < 0 -> acc
     | 0 -> 0 :: acc
     | x when x > 0 -> zero_jusque_rec x (x :: acc);;
-  
+
+  (** Crée une liste de 0 à (n-1)
+* @param nb la longueur de la liste voulue
+* @return la liste de 0 jusqu'à (nb-1) ou la liste vide si nb<0
+*)
   let zero_jusque nb = zero_jusque_rec nb [];;
 
   let couleurs_possibles = zero_jusque (read_int (print_string "Entrez un nombre de couleurs possibles entre 0 et 8 :";print_newline ()));;
-       
-  let rec compare code1 code2 = 0;;
-   (* match (code1,code2) with
+
+  let rec compare_rec code1 code2 sm1 sm2 =
+    match (code1,code2) with
+    | ([],[]) -> sm1 - sm2
+    | (a :: ls1,b :: ls2) -> compare_rec ls1 ls2 (a+sm1) (b+sm2);;
+  
+  let rec compare code1 code2 = 
+    match (code1,code2) with
     | ([],[]) -> 0
     | (a :: ls1,b :: ls2) -> if a = b then
                                compare ls1 ls2
                              else
-   à compléter avec la fonction de comparaison*)
-       
+                               compare_rec ls1 ls2 0 0;;
+                               
 let rec string_of_code t = 
 	"|"^
 	match t with
@@ -173,7 +187,12 @@ let toutes_reponses = creation_de_toutes_reponses nombre_pions [(0,0)];;
                  nb_mauvaise_rep ls (snd(res)) (acc+fst(res));;
                
 
-  let reponse code vrai_code = if (List.length code = List.length vrai_code) then
+  let rec code_valide code nb_vrai_code couleur_max =
+    match code with
+    | [] -> nb_vrai_code = 0 
+    | v :: ls -> if v <= couleur_max then code_valide ls (nb_vrai_code-1) couleur_max else false;;
+  
+  let reponse code vrai_code = if code_valide code (List.length vrai_code) ((List.length couleurs_possibles)-1) then
                                  let (x,y,z) = nb_bonne_rep code vrai_code in
                                  Some(x,nb_mauvaise_rep y z 0)
                                else

@@ -27,7 +27,12 @@ end =
   struct
 
     let nombre_methodes = 2;;
-    
+
+    (** Compare deux codes
+* @param code1 un code 
+* @param code2 un code 
+* @return vrai si les codes sont égaux, faux sinon
+*)
     let rec code_egaux code1 code2 =
       match (code1,code2) with
       | ([],[]) -> true
@@ -36,7 +41,12 @@ end =
                                else
                                  false
       | _ -> false;;
-    
+
+    (** Vérifie si il existe un code dans une liste 
+* @param code un code
+* @param essais la liste courante des codes déjà essayé
+* @return vrai si le code est contenue dans la liste sinon faux
+*)
     let rec existe code essais =
       match essais with
       | [] -> false
@@ -44,7 +54,14 @@ end =
                      true
                    else
                      existe code ls;;
-    
+
+    (** Calcule le poids d'un code par rapport à une réponse et la liste des réponses
+* @param code un code
+* @param rep réponse testé
+* @param possibles la liste courante des codes possibles
+* @param acc le nombre de code ayant la même réponse que code
+* @return acc le poids du code pour cette réponse
+*)
     let rec filtre_choix_knuth code rep possibles acc =
       match possibles with
       | [] -> acc
@@ -54,30 +71,57 @@ end =
                                             filtre_choix_knuth code rep ls (acc+1)
                                           else
                                             filtre_choix_knuth code rep ls acc;;
-    
+
+    (** Calcule le poids d'un code par rapport à la liste des réponses posiible et des codes possibles 
+* @param code le code pour le poids
+* @param possibles la liste courantes des codes possibles
+* @return le poids de code
+*)
     let poids code possibles = let deb = filtre_choix_knuth code (List.hd (Code.toutes_reponses)) possibles 0 and fin = List.tl Code.toutes_reponses in
                                List.fold_left (fun acc x -> let y = filtre_choix_knuth code x possibles 0 in if acc > y then acc else y) deb fin;;
-    
+
+    (** Choisie le prochain code à essayer
+* @param essais la liste courante des codes déjà essayé
+* @param possibles la liste courante des codes possibles
+* @param liste_tous la liste de tous les codes réalisable
+* @param res le prochain code à essayer
+* @return le prochain code à essayer d'après la méthode de Knuth
+*)
     let rec choix_knuth_rec essais possibles liste_tous res =
       match liste_tous with
       | [] -> snd(res)
       | v :: ls when existe v essais -> choix_knuth_rec essais possibles ls res
-      | v :: ls -> let x = poids v possibles in if x < fst(res) then
-                                                  choix_knuth_rec essais possibles ls (x,v)
-                                                else
-                                                  choix_knuth_rec essais possibles ls res;;
-    
+      | v :: ls -> let x = poids v possibles in match x with
+                                                | x when x > fst(res) -> choix_knuth_rec essais possibles ls res
+                                                | x when x = fst(res) -> if (Code.compare v (snd(res))) < 0 then
+                                                                           choix_knuth_rec essais possibles ls (x,v)
+                                                                         else
+                                                                           choix_knuth_rec essais possibles ls res
+                                                | _ -> choix_knuth_rec essais possibles ls (x,v);;
+
+    (** Choisie le prochain code à essayer
+* @param essais la liste courante des codes déjà essayé
+* @param possibles la liste courante des codes possibles
+* @param liste_tous la liste de tous les codes réalisable
+* @return le prochain code à essayer d'après la méthode de Knuth
+*)
     let rec choix_knuth essais possibles liste_tous =
       match liste_tous with
       | [] -> failwith "choix_knuth"
       | v :: ls when existe v essais -> choix_knuth essais possibles ls
       | v :: ls -> choix_knuth_rec essais possibles ls ((poids v possibles),v);; 
-    
+
     let choix methode essais possibles =
       match methode with
       | 1 -> List.hd possibles
       | _ -> choix_knuth essais possibles Code.tous ;;
+
     
+    (** Supprime un code dans une liste de code
+* @param x un code
+* @param l une liste de code
+* @return la liste de code sans le code x 
+*)
     let rec supprime_un x l =
       match l with
       | [] -> l
@@ -85,7 +129,13 @@ end =
                           ls
                         else
                       valeur :: supprime_un x ls;;
-    
+
+    (** Actualise la liste des codes possibles
+* @param code le dernier code essayé
+* @param rep réponse associé à code
+* @param possibles la liste des codes possibles
+* @return la liste courante des codes possibles
+*)
     let rec filtre_naif code rep possibles =
       match possibles with
       | [] -> possibles
@@ -99,7 +149,6 @@ end =
     
     let filtre methode der_code possibles =
       match methode with
-      | 1 -> filtre_naif (fst(der_code)) (snd(der_code)) (supprime_un (fst(der_code)) possibles)
       | _ -> filtre_naif (fst(der_code)) (snd(der_code)) (supprime_un (fst(der_code)) possibles);;
     
   end ;;
