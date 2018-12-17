@@ -68,7 +68,6 @@ let rec string_of_code t =
 	"|"^
 	match t with
 	| [] -> ""
-	| 0 :: liste -> "orange"^string_of_code liste
 	| 1 :: liste -> "rouge"^string_of_code liste
 	| 2 :: liste -> "vert"^string_of_code liste
 	| 3 :: liste -> "bleu"^string_of_code liste
@@ -77,16 +76,20 @@ let rec string_of_code t =
 	| 6 :: liste -> "blanc"^string_of_code liste
 	| 7 :: liste -> "cyan"^string_of_code liste;;
 
+(** Transforme une couleur sous forme de string en numéro
+* @param s la chaine de caractère décrivant une couleur
+* @return le numéro associé à la couleur en option,
+  donc [None] si la couleur en entrée est mal écrite ou qu'elle nexiste pas
+*)
 let num_of_couleur_opt s = 
 	match s with
-	| "orange" -> Some(0) 
-	| "rouge" -> Some(1) 
-	| "vert" -> Some(2) 
-	| "bleu" -> Some(3) 
-	| "jaune" -> Some(4) 
-	| "violet" -> Some(5) 
-	| "blanc" -> Some(6) 
-	| "cyan" -> Some(7) 
+	| "rouge" -> Some(0) 
+	| "vert" -> Some(1) 
+	| "bleu" -> Some(2) 
+	| "jaune" -> Some(3) 
+	| "violet" -> Some(4) 
+	| "blanc" -> Some(5) 
+	| "cyan" -> Some(6) 
 	| _ -> None;;
 
 let rec code_of_string s =

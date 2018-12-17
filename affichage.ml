@@ -13,7 +13,9 @@ let int_of_couleur valeur =
 	| _ -> Graphics.set_color Graphics.cyan;;
 *)
 
-
+(** Afffiche un code dans le terminal tel quel avec des points colorés
+* @param code code à écrire dans le terminal
+*)
 let rec afficher_code_rec code =
 	match code with
 	| [] -> print_string "\027[37m"
@@ -25,21 +27,27 @@ let rec afficher_code_rec code =
 	| 5 :: liste -> print_string ("\027[37m ● ");afficher_code_rec liste
 	| 6 :: liste -> print_string ("\027[36m ● ");afficher_code_rec liste;;
 
+(** Afffiche un code avec des séparateurs au début et à la fin
+* @param code code à écrire dans le terminal
+*)
 let afficher_code code = print_string "|"; afficher_code_rec code; print_string "|";;
 
+(** Afffiche une réponse dans le terminal
+* @param rep réponse à écrire dans le terminal
+*)
 let afficher_reponse rep =
 	match rep with
 	| (a,b) -> print_string ("     BP : "^string_of_int a ^"     MP : "^string_of_int b);;
 
+
+(** Afffiche un code et sa réponse associée dans le terminal à l'aide des fonctions précédentes
+* @param liste_codes la liste de codes à écrire dans le terminal
+* @param liste_reponses la liste de réponses associées aux codes dans la liste précedente
+*)
 let rec affiche_plusieurs_codes_et_reponses liste_codes liste_reponses = 
 	match (liste_codes,liste_reponses) with
 	| ([],[]) -> ()
 	| (v1 :: liste1,v2 :: liste2) -> afficher_code v1;afficher_reponse v2;print_newline ();affiche_plusieurs_codes_et_reponses liste1 liste2;;
-
-
-
-
-
 
 
 end;;
