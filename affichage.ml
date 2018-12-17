@@ -1,4 +1,26 @@
-module Affichage = struct
+#use "code.ml"
+module Affichage : sig
+
+(** Afffiche un code avec des séparateurs au début et à la fin
+* @param code à écrire dans le terminal
+*)
+val afficher_code : Code.t -> unit
+
+(** Afffiche une réponse dans le terminal
+* @param réponse à écrire dans le terminal
+*)
+val afficher_reponse : (int * int) -> unit
+
+(** Afffiche un code et sa réponse associée dans le terminal à l'aide des fonctions précédentes
+* @param la liste de codes à écrire dans le terminal
+* @param la liste de réponses associées aux codes dans la liste précedente
+*)
+val affiche_plusieurs_codes_et_reponses : Code.t list -> (int * int) list -> unit
+
+end
+
+
+ = struct
 	
 
 (*
@@ -14,7 +36,7 @@ let int_of_couleur valeur =
 *)
 
 (** Afffiche un code dans le terminal tel quel avec des points colorés
-* @param code code à écrire dans le terminal
+* @param code à écrire dans le terminal
 *)
 let rec afficher_code_rec code =
 	match code with
@@ -27,23 +49,14 @@ let rec afficher_code_rec code =
 	| 5 :: liste -> print_string ("\027[37m ● ");afficher_code_rec liste
 	| 6 :: liste -> print_string ("\027[36m ● ");afficher_code_rec liste;;
 
-(** Afffiche un code avec des séparateurs au début et à la fin
-* @param code code à écrire dans le terminal
-*)
+
 let afficher_code code = print_string "|"; afficher_code_rec code; print_string "|";;
 
-(** Afffiche une réponse dans le terminal
-* @param rep réponse à écrire dans le terminal
-*)
 let afficher_reponse rep =
 	match rep with
 	| (a,b) -> print_string ("     BP : "^string_of_int a ^"     MP : "^string_of_int b);;
 
 
-(** Afffiche un code et sa réponse associée dans le terminal à l'aide des fonctions précédentes
-* @param liste_codes la liste de codes à écrire dans le terminal
-* @param liste_reponses la liste de réponses associées aux codes dans la liste précedente
-*)
 let rec affiche_plusieurs_codes_et_reponses liste_codes liste_reponses = 
 	match (liste_codes,liste_reponses) with
 	| ([],[]) -> ()
