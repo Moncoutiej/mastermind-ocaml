@@ -63,7 +63,13 @@ end =
 *)
   let zero_jusque nb = zero_jusque_rec nb [];;
 
-  let couleurs_possibles = zero_jusque (read_int (print_string "Entrez un nombre de couleurs possibles entre 0 et 8 :";print_newline ()));;
+  let rec demande_utilisateur = fun () -> let v = read_int (print_string "Entrez un nombre de couleurs possibles entre 0 et 7 :";print_newline ())
+                             in if v >= 0 && v <=7 then
+                                  v 
+                                else
+                                 demande_utilisateur () ;;
+
+  let couleurs_possibles = zero_jusque (demande_utilisateur () );;
 
   let rec compare_rec code1 code2 sm1 sm2 =
     match (code1,code2) with
@@ -82,13 +88,14 @@ let rec string_of_code t =
 	"|"^
 	match t with
 	| [] -> ""
-	| 1 :: liste -> "rouge"^string_of_code liste
-	| 2 :: liste -> "vert"^string_of_code liste
-	| 3 :: liste -> "bleu"^string_of_code liste
-	| 4 :: liste -> "jaune"^string_of_code liste
-	| 5 :: liste -> "violet"^string_of_code liste
-	| 6 :: liste -> "blanc"^string_of_code liste
-	| 7 :: liste -> "cyan"^string_of_code liste;;
+	| 0 :: liste -> "rouge"^string_of_code liste
+	| 1 :: liste -> "vert"^string_of_code liste
+	| 2 :: liste -> "bleu"^string_of_code liste
+	| 3 :: liste -> "jaune"^string_of_code liste
+	| 4 :: liste -> "violet"^string_of_code liste
+	| 5 :: liste -> "blanc"^string_of_code liste
+	| 6 :: liste -> "cyan"^string_of_code liste
+  | _ -> failwith "pas de couleur associee";;
 
 (** Transforme une couleur sous forme de string en numéro
 * @param la chaine de caractère décrivant une couleur
