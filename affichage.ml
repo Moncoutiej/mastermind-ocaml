@@ -18,13 +18,12 @@ let rec afficher_code_rec code =
 	match code with
 	| [] -> print_string "\027[37m"
 	| 0 :: liste -> print_string ("\027[31m ● ");afficher_code_rec liste
-	| 1 :: liste -> print_string ("\027[31m ● ");afficher_code_rec liste
-	| 2 :: liste -> print_string ("\027[32m ● ");afficher_code_rec liste
-	| 3 :: liste -> print_string ("\027[34m ● ");afficher_code_rec liste
-	| 4 :: liste -> print_string ("\027[33m ● ");afficher_code_rec liste
-	| 5 :: liste -> print_string ("\027[35m ● ");afficher_code_rec liste
-	| 6 :: liste -> print_string ("\027[37m ● ");afficher_code_rec liste
-	| 7 :: liste -> print_string ("\027[36m ● ");afficher_code_rec liste;;
+	| 1 :: liste -> print_string ("\027[32m ● ");afficher_code_rec liste
+	| 2 :: liste -> print_string ("\027[34m ● ");afficher_code_rec liste
+	| 3 :: liste -> print_string ("\027[33m ● ");afficher_code_rec liste
+	| 4 :: liste -> print_string ("\027[35m ● ");afficher_code_rec liste
+	| 5 :: liste -> print_string ("\027[37m ● ");afficher_code_rec liste
+	| 6 :: liste -> print_string ("\027[36m ● ");afficher_code_rec liste;;
 
 let afficher_code code = print_string "|"; afficher_code_rec code; print_string "|";;
 
