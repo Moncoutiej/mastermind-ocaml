@@ -66,8 +66,6 @@ let rec affiche_plusieurs_codes_et_reponses liste_codes liste_reponses =
 end;;
 open Affichage;;
 
-affiche_plusieurs_codes_et_reponses [[1;2;3;4];[1;4;5;6];[3;4;1;6]] [(2,1);(3,0);(0,4)];;
-
 (*
 Graphics.open_graph " 1048x725";;
 Affichage.int_of_couleur 2;;
