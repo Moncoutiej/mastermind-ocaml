@@ -114,7 +114,10 @@ end =
     let choix methode essais possibles =
       match methode with
       | 1 -> List.hd possibles
-      | _ -> choix_knuth essais possibles Code.tous ;;
+      | _ -> match possibles with
+            | [] -> failwith "choix"
+            | v :: [] -> v
+            | _ -> choix_knuth essais possibles Code.tous ;;
 
     
     (** Supprime un code dans une liste de code
