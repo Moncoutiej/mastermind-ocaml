@@ -1,29 +1,92 @@
+#use "affichage.ml";;
 #use "IA.ml";;
 module Mastermind = struct
 	
 type joueur = {nom : string; points : int; humain : bool};;
-type joueurs = joueur list;;
+type joueurs = {un : joueur; deux : joueur};;
 
-let creationjoueurs mode = if mode then 
-({nom = read_line (print_string "Entrer votre nom : "); points = 0; humain = true}, {nom = "Ordinateur"; points = 0; humain =false}) else 
-({nom = read_line (print_string "Entrer votre nom joueur 2 : "); points = 0; humain = true}, {nom = read_line (print_string "Entrer votre nom joueur 1 : "); points = 0; humain =true});;
+let creationjoueurs mode nom_joueur = if mode then 
+                             {un = {nom = nom_joueur; points = 0; humain = true}; deux = {nom = "Ordinateur"; points = 0; humain =false}}
+                           else 
+                             {un = {nom = read_line (print_string "Entrer votre nom joueur 2 : "); points = 0; humain = true}; deux = {nom = read_line (print_string "Entrer votre nom joueur 1 : "); points = 0; humain =true}};;
 
-let commence couplejoueurs = let b = Random.bool() in match couplejoueurs with
-															| (_,_) when b -> couplejoueurs
-															| (x,y) -> (y,x);;
+let commence couplejoueurs = let b = Random.bool() in
+                             match couplejoueurs with
+			                       | {un = _; deux = _} when b -> couplejoueurs
+			                       | {un = x; deux = y} -> {un = y; deux = x};; 
+
+let nb_parties_pairs n = (n mod 2 <>0);;
+
+let rec random_code nb_pion couleur_max acc =
+  if nb_pion = 0 then
+    acc
+  else
+    random_code (nb_pion-1) couleur_max (Random.int couleur_max :: acc);;
+
+let creation_random_code = fun () -> random_code Code.nombre_pions (List.length Code.couleurs_possibles) [];; 
 
 
-let rec code_egaux code1 code2 acc =
-	match (code1,code2) with
-	| ([],[]) -> acc = 4
-	| (a :: ls1, b :: ls2) -> if a = b then code_egaux ls1 ls2 (acc+1) 
-							  else code_egaux ls1 ls2 acc;;
+let rec saisie_ordi_humain participant = if participant = {nom = "Ordinateur"; points = 0; humain =false} 
+                                           then creation_random_code ()
+                                           else let saisie = read_line ((print_string "Creer le code caché : ")) 
+                                                in match Code.code_of_string saisie with
+                                                    | None -> print_string "Saisie Invalide"; saisie_ordi_humain participant
+                                                    | Some(x) -> x;;
+
+let rec saisie_humain participant = let saisie = read_line ((print_string "Tenter un code : ")) 
+                                                in match Code.code_of_string saisie with
+                                                    | None -> print_string "Saisie Invalide"; saisie_humain participant
+                                                    | Some(x) -> x;;
+
+let rec run_tentatives_IA tentatives vrai_code participant possibles essaye =
+  match tentatives with
+  | 0 -> participant 
+  | e -> let code = (IA.choix 1 essaye possibles) in let reponse = Code.reponse code vrai_code in match reponse with
+                                                       | None -> failwith "run_tentatives_IA"
+                                                       | Some(a,b) when a = List.length vrai_code -> Affichage.afficher_code code; Affichage.afficher_reponse (a,b); print_newline (); {nom = participant.nom ; points = participant.points+1 ; humain = participant.humain}
+                                                       | Some(a,b) -> let nw_possibles = IA.filtre 0 (code,reponse) possibles in Affichage.afficher_code code; Affichage.afficher_reponse (a,b); print_newline (); run_tentatives_IA (e-1) vrai_code participant nw_possibles (code :: essaye) ;;
+
+(*let run_tentatives_IA tentatives vrai_code participant = let reponse = Code.reponse (IA.choix 0 [] Code.tous) vrai_code in match value with
+                                                                                                                          | None -> failwith "run_tentatives_IA"
+                                                                                                                          | Some(a,b) when a = List.length vrai_code -> {nom = participant.nom ; points = participant.points+1 ; humain = participant.humain}
+                                                                                                                          | _ -> run_tentatives_IA_rec (tentatives-1) vrai_code participant Code.tous [code];;
+*)
+let rec run_tentatives_humain tentatives vrai_code participant essaye = 
+  match tentatives with
+  | 0 -> participant 
+  | e -> let code = (saisie_humain participant) in let reponse = Code.reponse code vrai_code in match reponse with
+                                                       | None -> failwith "run_tentatives_humain"
+                                                       | Some(a,b) when a = List.length vrai_code -> Affichage.afficher_code code; Affichage.afficher_reponse (a,b); print_newline (); {nom = participant.nom ; points = participant.points+1 ; humain = participant.humain}
+                                                       | Some(a,b) -> Affichage.afficher_code code; Affichage.afficher_reponse (a,b); print_newline (); run_tentatives_humain (e-1) vrai_code participant (code::essaye);;
 
 
+(*let run_tentatives_humain tentatives vrai_code participant = run_tentatives_humain_rec tentatives  vrai_code participant [];;*)
 
 
+let rec run_parties parties couplejoueurs tentatives =
+  match parties with
+  | 0 -> couplejoueurs
+  | e when (e mod 2 = 0) && couplejoueurs.un.humain -> let participant = run_tentatives_IA tentatives (saisie_ordi_humain couplejoueurs.un) couplejoueurs.deux Code.tous [[]]
+                               in run_parties (e-1) {un = couplejoueurs.un; deux = participant} tentatives 
+  | e when (e mod 2 <> 0) && couplejoueurs.deux.humain -> let participant = run_tentatives_IA tentatives (saisie_ordi_humain couplejoueurs.deux) couplejoueurs.un Code.tous [[]]
+                               in run_parties (e-1) {un = participant; deux = couplejoueurs.deux} tentatives
+  | e when (e mod 2 = 0) && (not couplejoueurs.un.humain) -> let participant = run_tentatives_humain tentatives (saisie_ordi_humain couplejoueurs.un) couplejoueurs.deux [[]]
+                               in run_parties (e-1) {un = couplejoueurs.un; deux = participant} tentatives
+  | e when (e mod 2 <> 0) && (not couplejoueurs.deux.humain) -> let participant = run_tentatives_humain tentatives (saisie_ordi_humain couplejoueurs.deux) couplejoueurs.un [[]]
+                               in run_parties (e-1) {un = participant; deux = couplejoueurs.deux} tentatives;;
 
+(*let rec mastermind nom tentatives parties  =
+  let participants = creationjoueurs true nom in 
+    let couplejoueurs = commence participants in if nb_parties_pairs parties 
+                                                 then run_parties (parties+1) couplejoueurs tentatives
+                                                 else run_parties parties couplejoueurs tentatives ;;
+
+
+*)
 
 end;;
 open Mastermind;;
+(*Mastermind.mastermind "Luca" 10 1;;*)
+Mastermind.run_parties 2 {un = {nom = "Ordinateur"; points = 0; humain = false}; deux = {nom = "Luca"; points = 0; humain =true}} 10;;
+(*Mastermind.run_parties 3 {un = {nom = "Luca"; points = 0; humain = true}; deux = {nom = "Ordinateur"; points = 0; humain =false}} 6;;*)
 
