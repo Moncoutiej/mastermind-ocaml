@@ -75,6 +75,11 @@ end =
 
   let couleurs_possibles = zero_jusque (demande_utilisateur () );;
 
+    (** Compare deux codes
+* @param code1 un code
+* @param code2 un code
+* @return la différence de la somme de chaque composante des codes 
+*)
   let rec compare_rec code1 code2 sm1 sm2 =
     match (code1,code2) with
     | ([],[]) -> sm1 - sm2
@@ -88,26 +93,26 @@ end =
                              else
                                compare_rec ls1 ls2 0 0;;
                                
-let rec string_of_code t = 
-	"|"^
-	match t with
-	| [] -> ""
-	| 0 :: liste -> "rouge"^string_of_code liste
-	| 1 :: liste -> "vert"^string_of_code liste
-	| 2 :: liste -> "bleu"^string_of_code liste
-	| 3 :: liste -> "jaune"^string_of_code liste
-	| 4 :: liste -> "violet"^string_of_code liste
-	| 5 :: liste -> "blanc"^string_of_code liste
-	| 6 :: liste -> "cyan"^string_of_code liste
-  | _ -> failwith "pas de couleur associee";;
-
-(** Transforme une couleur sous forme de string en numéro
-* @param la chaine de caractère décrivant une couleur
-* @return le numéro associé à la couleur en option,
-  donc [None] si la couleur en entrée est mal écrite ou qu'elle nexiste pas
-*)
-let num_of_couleur_opt s = 
-	match s with
+  let rec string_of_code t = 
+    "|"^
+      match t with
+      | [] -> ""
+      | 0 :: liste -> "rouge"^string_of_code liste
+      | 1 :: liste -> "vert"^string_of_code liste
+      | 2 :: liste -> "bleu"^string_of_code liste
+      | 3 :: liste -> "jaune"^string_of_code liste
+      | 4 :: liste -> "violet"^string_of_code liste
+      | 5 :: liste -> "blanc"^string_of_code liste
+      | 6 :: liste -> "cyan"^string_of_code liste
+      | _ -> failwith "pas de couleur associee";;
+  
+  (** Transforme une couleur sous forme de string en numéro
+   * @param la chaine de caractère décrivant une couleur
+   * @return le numéro associé à la couleur en option,
+  donc [No   ne] si la couleur en entrée est mal écrite ou qu'elle nexiste pas
+   *)
+  let num_of_couleur_opt s = 
+    match s with
 	| "rouge" -> Some(0) 
 	| "vert" -> Some(1) 
 	| "bleu" -> Some(2) 
@@ -116,63 +121,97 @@ let num_of_couleur_opt s =
 	| "blanc" -> Some(5) 
 	| "cyan" -> Some(6) 
 	| _ -> None;;
-
-let rec code_of_string s =
-	if s = "|" then
-	 Some([])
-	else
+  
+  let rec code_of_string s =
+    if s = "|" then
+      Some([])
+    else
 	 let i_deuxieme_separateur = String.index_from s 1 '|' in
-	  let s_prem_couleur = String.sub s 1 (i_deuxieme_separateur -1) in
-	   let suite_s = String.sub s i_deuxieme_separateur (String.rindex s '|' -i_deuxieme_separateur +1) in
-	    let pion = num_of_couleur_opt s_prem_couleur in
-	     let apl_rec = code_of_string suite_s in
-			match (pion,apl_rec) with
+	 let s_prem_couleur = String.sub s 1 (i_deuxieme_separateur -1) in
+	 let suite_s = String.sub s i_deuxieme_separateur (String.rindex s '|' -i_deuxieme_separateur +1) in
+	 let pion = num_of_couleur_opt s_prem_couleur in
+	 let apl_rec = code_of_string suite_s in
+	 match (pion,apl_rec) with
 			| (Some(a),Some(b)) -> Some(a :: b)
 			| _ -> None;;
 
-let rec code_initial nb_pion acc=
-  match nb_pion with
-  | 0 -> acc
-  | _ -> code_initial (nb_pion-1) (0 :: acc);;
+  (** Créé le code de longueur nb_pion composé que de zéro
+   * @param nb_pion le nombre de pion pour un code
+   * @param acc le code créé
+   * @return le code composé de zéro
+   *)
+  let rec code_initial nb_pion acc=
+    match nb_pion with
+    | 0 -> acc
+    | _ -> code_initial (nb_pion-1) (0 :: acc);;
+  
+  (** Crée un nouveau code
+   * @param couleur_max entier associé à la plus grande couleur
+   * @param code code précédent permettant de créer le nouveau
+   * @return le nouveau code créé
+   *)
+  let rec nouveau_code couleur_max code = 
+    match code with
+    | [] ->  (false,[])
+    | x :: ls when x = couleur_max -> let (a,b) = nouveau_code couleur_max ls in
+                                      (a,(0 :: b))
+    | x :: ls -> (true,(x+1 :: ls));;
+  
+  (** Crée tous les codes possibles
+   * @param couleur_max entier associé à la plus grande couleur
+   * @param acc la liste de tous les codes
+   * @return la liste de tous les codes
+   *)
+  let rec creation_de_tout_code couleur_max acc =
+    let (a,b) = (nouveau_code couleur_max (List.hd acc)) in
+    if a then
+      creation_de_tout_code couleur_max (b :: acc)
+    else
+      acc;;
+  
+  (** renvoie le dernier élément d'une liste
+   * @param liste la liste
+   * @return le dernier élément de la liste
+   *)
+  let rec fin_liste liste =
+    match liste with
+    | [] -> failwith "fin_liste"
+    | v :: [] -> v
+    | v :: ls -> fin_liste ls;;
+  
+  let tous = let code = code_initial nombre_pions [] in
+             creation_de_tout_code (fin_liste couleurs_possibles) ([code]);; 
+  
+  (** Crée une nouvelle réponse possible
+   * @param nb_pion nombre de pion par code
+   * @param reponse la réponse précédente
+   * @return la nouvelle réponse
+   *)
+  let rec nouvel_reponse nb_pion reponse =
+    match reponse with
+    | (a,b) when a = nb_pion -> (false,reponse)
+    | (a,b) when (a+b) = nb_pion -> (true,((a+1),0))
+    | (a,b) -> (true,(a,(b+1)));;
+  
+  (** Crée toutes les réponses possibles
+   * @param nb_pion nombre de pion par code
+   * @param acc la liste de toutes les réponses
+   * @return la liste de toutes les réponses possibles
+   *)
+  let rec creation_de_toutes_reponses nb_pion acc =
+    let (a,b) = (nouvel_reponse nb_pion (List.hd acc)) in
+    if a then
+      creation_de_toutes_reponses nb_pion (b :: acc)
+    else
+      acc;;
+  
+  let toutes_reponses = creation_de_toutes_reponses nombre_pions [(0,0)];;
 
-let rec nouveau_code couleur_max code = 
-  match code with
-  | [] ->  (false,[])
-  | x :: ls when x = couleur_max -> let (a,b) = nouveau_code couleur_max ls in
-                                    (a,(0 :: b))
-  | x :: ls -> (true,(x+1 :: ls));;
-
-let rec creation_de_tout_code couleur_max acc =
-  let (a,b) = (nouveau_code couleur_max (List.hd acc)) in
-                  if a then
-                    creation_de_tout_code couleur_max (b :: acc)
-                  else
-                    acc;;
-
-let rec fin_liste liste =
-  match liste with
-  | [] -> failwith "fin_liste"
-  | v :: [] -> v
-  | v :: ls -> fin_liste ls;;
-
-let tous = let code = code_initial nombre_pions [] in
-           creation_de_tout_code (fin_liste couleurs_possibles) ([code]);; 
-
-let rec nouvel_reponse nb_pion reponse =
-  match reponse with
-  | (a,b) when a = nb_pion -> (false,reponse)
-  | (a,b) when (a+b) = nb_pion -> (true,((a+1),0))
-  | (a,b) -> (true,(a,(b+1)));;
-
-let rec creation_de_toutes_reponses nb_pion acc =
-  let (a,b) = (nouvel_reponse nb_pion (List.hd acc)) in
-                  if a then
-                    creation_de_toutes_reponses nb_pion (b :: acc)
-                  else
-                    acc;;
-
-let toutes_reponses = creation_de_toutes_reponses nombre_pions [(0,0)];;
-
+  (** Calcule le nombre de pion bien placé
+   * @param code1 un code
+   * @param code2 un code
+   * @return un triplet (nombre de pion bien placé, code1 sans les pions bien placé, code2 sans les pions bien placé)
+   *)
   let rec nb_bonne_rep code1 code2 =
     match (code1,code2) with
     | ([],[]) -> (0,[],[])
@@ -182,6 +221,11 @@ let toutes_reponses = creation_de_toutes_reponses nombre_pions [(0,0)];;
                              else
                                (x,a::y,b::z);;
 
+  (** supprime un element d'une liste
+   * @param x l'élément à supprimer
+   * @param l une liste 
+   * @return la liste avec un élément x en moins
+   *)
   let rec supprime_un x l =
     match l with
     | [] -> (0,l)
@@ -190,14 +234,25 @@ let toutes_reponses = creation_de_toutes_reponses nombre_pions [(0,0)];;
                      else
                        let res = supprime_un x l in
                        (fst(res),valeur :: snd(res));;
-  
+
+  (** Calcul le nombre de mauvaise réponse
+   * @param code1 un code
+   * @param code2 un code
+   * @param acc le nombre de pion mal placé
+   * @return le nombre de pion mal placé
+   *)
   let rec nb_mauvaise_rep code1 code2 acc =
     match code1 with
     | [] -> acc
     | a :: ls -> let res = supprime_un a code2 in
                  nb_mauvaise_rep ls (snd(res)) (acc+fst(res));;
-               
-
+  
+  (** Vérifie si le code rentré est valide
+   * @param code le code à vérifier
+   * @param nb_vrai_code le nombre de pion dans le vrai code
+   * @param couleur_max l'entier maximum possibles dans un code
+   * @return true si le code est valide, false sinon
+   *)
   let rec code_valide code nb_vrai_code couleur_max =
     match code with
     | [] -> nb_vrai_code = 0 
@@ -208,4 +263,4 @@ let toutes_reponses = creation_de_toutes_reponses nombre_pions [(0,0)];;
                                  Some(x,nb_mauvaise_rep y z 0)
                                else
                                  None;;
-end ;;
+  end;;
