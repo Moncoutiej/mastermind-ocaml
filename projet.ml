@@ -17,7 +17,7 @@ let commence couplejoueurs = let b = Random.bool() in
 
 let nb_parties_pairs n = if (n mod 2 = 0) then n else (n+1);;
 
-let methode = read_int ((print_string "Choisir la méthode, 1 : Naïf | 0 : Knuth : "));; 
+let methode = read_int ((print_string "Choisir la méthode, 1 : Naïf | 2 : Knuth : "));; 
 
 let rec random_code nb_pion couleur_max acc =
   if nb_pion = 0 then
@@ -28,9 +28,9 @@ let rec random_code nb_pion couleur_max acc =
 let creation_random_code = fun () -> random_code Code.nombre_pions (List.length Code.couleurs_possibles) [];; 
 
 
-let rec saisie_ordi_humain participant = if participant = {nom = "Ordinateur"; points = 0; humain =false} 
+let rec saisie_ordi_humain participant = if participant = {nom = "Ordinateur"; points = participant.points; humain =false} 
                                            then creation_random_code ()
-                                           else let saisie = read_line ((print_string "Creer le code caché : ")) 
+                                           else let saisie = read_line ((print_string "Creez le code caché : ")) 
                                                 in match Code.code_of_string saisie with
                                                     | None -> print_string "Saisie Invalide"; saisie_ordi_humain participant
                                                     | Some(x) -> x;;
@@ -59,16 +59,16 @@ let rec run_tentatives_humain tentatives vrai_code participant essaye =
 let rec run_parties parties couplejoueurs tentatives  =
   match parties with
   | 0 -> couplejoueurs
-  | e when (e mod 2 = 0) && couplejoueurs.un.humain -> let participant = run_tentatives_IA tentatives (saisie_ordi_humain couplejoueurs.un) couplejoueurs.deux Code.tous [[]] 
+  | e when (e mod 2 = 0) && couplejoueurs.un.humain -> print_string("1");  let participant = run_tentatives_IA tentatives (saisie_ordi_humain couplejoueurs.un) couplejoueurs.deux Code.tous [[]] 
                                in run_parties (e-1) {un = couplejoueurs.un; deux = participant} tentatives  
-  | e when (e mod 2 <> 0) && couplejoueurs.deux.humain -> let participant = run_tentatives_IA tentatives (saisie_ordi_humain couplejoueurs.deux) couplejoueurs.un Code.tous [[]] 
+  | e when (e mod 2 <> 0) && couplejoueurs.deux.humain -> print_string("2"); let participant = run_tentatives_IA tentatives (saisie_ordi_humain couplejoueurs.deux) couplejoueurs.un Code.tous [[]] 
                                in run_parties (e-1) {un = participant; deux = couplejoueurs.deux} tentatives 
-  | e when (e mod 2 = 0) && (not couplejoueurs.un.humain) -> let participant = run_tentatives_humain tentatives (saisie_ordi_humain couplejoueurs.un) couplejoueurs.deux [[]] 
+  | e when (e mod 2 = 0) && (not couplejoueurs.un.humain) -> print_string("3"); let participant = run_tentatives_humain tentatives (saisie_ordi_humain couplejoueurs.un) couplejoueurs.deux [[]] 
                                in run_parties (e-1) {un = couplejoueurs.un; deux = participant} tentatives 
-  | e when (e mod 2 <> 0) && (not couplejoueurs.deux.humain) -> let participant = run_tentatives_humain tentatives (saisie_ordi_humain couplejoueurs.deux) couplejoueurs.un [[]]
-                               in run_parties (e-1) {un = participant; deux = couplejoueurs.deux} tentatives ;;
+  | e when (e mod 2 <> 0) && (not couplejoueurs.deux.humain) -> print_string("4");let participant = run_tentatives_humain tentatives (saisie_ordi_humain couplejoueurs.deux) couplejoueurs.un [[]]
+                               in run_parties (e-1) {un = participant; deux = couplejoueurs.deux} tentatives;;
 
-let rec reponse_humain code vrai_code = let (a,b) = (read_int ((print_string "Enrer le nombre de bien placé : ")), read_int ((print_string "Enrer le nombre de mal placé : "))) in 
+let rec reponse_humain code vrai_code = let (a,b) = (read_int ((print_string "Entrez le nombre de bien placé : ")), read_int ((print_string "Entrez le nombre de mal placé : "))) in 
                                         match Code.reponse code vrai_code with
                                         | None -> failwith "reponse_humain"
                                         | Some(x,y) when (a<>x) || (b<> y) -> failwith "Vous vous etes trompe ou vous avez essaye de tricher !!!"
@@ -93,9 +93,9 @@ let rec run_parties_pas_auto parties couplejoueurs tentatives =
   | e when (e mod 2 <> 0) && couplejoueurs.deux.humain -> let participant = run_reponse_pas_auto tentatives (saisie_ordi_humain couplejoueurs.deux) couplejoueurs.un Code.tous [[]] 
                                in run_parties_pas_auto (e-1) {un = participant; deux = couplejoueurs.deux} tentatives 
   | e when (e mod 2 = 0) && (not couplejoueurs.un.humain) -> let participant = run_tentatives_humain tentatives (saisie_ordi_humain couplejoueurs.un) couplejoueurs.deux [[]]
-                               in run_parties (e-1) {un = couplejoueurs.un; deux = participant} tentatives 
+                               in run_parties_pas_auto (e-1) {un = couplejoueurs.un; deux = participant} tentatives 
   | e when (e mod 2 <> 0) && (not couplejoueurs.deux.humain) -> let participant = run_tentatives_humain tentatives (saisie_ordi_humain couplejoueurs.deux) couplejoueurs.un [[]]
-                               in run_parties (e-1) {un = participant; deux = couplejoueurs.deux} tentatives;;
+                               in run_parties_pas_auto (e-1) {un = participant; deux = couplejoueurs.deux} tentatives;;
 
 let gagnant couplejoueurs = 
   match couplejoueurs.un.points with
@@ -111,7 +111,7 @@ let rec mastermind nom tentatives parties auto =
     let couplejoueurs = commence participants in let partie_pairs = nb_parties_pairs parties in 
                                                                     match auto with
                                                                     | true -> let winner = run_parties partie_pairs couplejoueurs tentatives  in gagnant winner 
-                                                                    | false -> let winner = run_parties_pas_auto partie_pairs couplejoueurs tentatives  in gagnant winner;; 
+                                                                    | false -> let winner = run_parties_pas_auto partie_pairs couplejoueurs tentatives in gagnant winner;; 
                                                                     
     
                                                  
