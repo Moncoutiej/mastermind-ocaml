@@ -5,6 +5,8 @@ module Mastermind = struct
 type joueur = {nom : string; points : int; humain : bool};;
 type joueurs = {un : joueur; deux : joueur};;
 
+let clear = (fun () -> Sys.command("clear"));;
+
 let creationjoueurs mode nom_joueur = if mode then 
                              {un = {nom = nom_joueur; points = 0; humain = true}; deux = {nom = "Ordinateur"; points = 0; humain =false}}
                            else 
@@ -118,7 +120,7 @@ let rec mastermind nom tentatives parties auto =
                                                 
 end;;
 open Mastermind;;
-Mastermind.mastermind "Luca" 6 1 true;;
+(*Mastermind.mastermind "Luca" 6 1 true;;*)
 (*Mastermind.run_parties 2 {un = {nom = "Ordinateur"; points = 0; humain = false}; deux = {nom = "Luca"; points = 0; humain =true}} 10;;*)
 (*Mastermind.run_parties 3 {un = {nom = "Luca"; points = 0; humain = true}; deux = {nom = "Ordinateur"; points = 0; humain =false}} 6;;*)
 
