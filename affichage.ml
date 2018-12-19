@@ -55,7 +55,7 @@ let rec afficher_code_rec code =
 	| 6 :: liste -> print_string ("\027[36m ● ");afficher_code_rec liste;;
 
 
-let afficher_code code = print_string "|"; afficher_code_rec code; print_string "|";;
+let afficher_code code = print_string "\027[37m |"; afficher_code_rec code; print_string "|";;
 
 let afficher_reponse rep =
 	match rep with
@@ -65,7 +65,7 @@ let afficher_reponse rep =
 let afficher_couleurs_possibles  taille_liste_couleurs = 
     match taille_liste_couleurs with
 	| 0 -> print_string "aucunes couleurs"
-	| 1 -> print_string "La seule couleur possibles est : rouge"
+	| 1 -> print_string "La seule couleur possible est : rouge"
 	| 2 -> print_string "Les couleurs possibles sont : rouge, vert"
 	| 3 -> print_string "Les couleurs possibles sont : rouge, vert, bleu"
 	| 4 -> print_string "Les couleurs possibles sont : rouge, vert, bleu, jaune"
