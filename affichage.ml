@@ -17,6 +17,11 @@ val afficher_reponse : (int * int) -> unit
 *)
 val affiche_plusieurs_codes_et_reponses : Code.t list -> (int * int) list -> unit
 
+(** Afffiche les couleurs possibles pour l'utilisateur
+* @param la taille de la liste de couleurs
+*)
+val afficher_couleurs_possibles : int -> unit 
+
 end
 
 
@@ -55,6 +60,20 @@ let afficher_code code = print_string "|"; afficher_code_rec code; print_string 
 let afficher_reponse rep =
 	match rep with
 	| (a,b) -> print_string ("     BP : "^string_of_int a ^"     MP : "^string_of_int b);;
+
+
+let afficher_couleurs_possibles  taille_liste_couleurs = 
+    match taille_liste_couleurs with
+	| 0 -> print_string "aucunes couleurs"
+	| 1 -> print_string "La seule couleur possibles est : rouge"
+	| 2 -> print_string "Les couleurs possibles sont : rouge, vert"
+	| 3 -> print_string "Les couleurs possibles sont : rouge, vert, bleu"
+	| 4 -> print_string "Les couleurs possibles sont : rouge, vert, bleu, jaune"
+	| 5 -> print_string "Les couleurs possibles sont : rouge, vert, bleu, jaune, violet"
+	| 6 -> print_string "Les couleurs possibles sont : rouge, vert, bleu, jaune, violet, blanc"
+	| 7 -> print_string "Les couleurs possibles sont : rouge, vert, bleu, jaune, violet, blanc, cyan"
+	| _ -> failwith "erreur taille liste couleur";;
+
 
 
 let rec affiche_plusieurs_codes_et_reponses liste_codes liste_reponses = 
