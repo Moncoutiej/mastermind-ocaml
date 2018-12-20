@@ -62,7 +62,7 @@ let afficher_reponse rep =
 	| (a,b) -> print_string ("     BP : "^string_of_int a ^"     MP : "^string_of_int b);;
 
 
-let afficher_couleurs_possibles  taille_liste_couleurs = 
+let afficher_couleurs_possibles taille_liste_couleurs = 
     match taille_liste_couleurs with
 	| 0 -> print_string "aucunes couleurs"
 	| 1 -> print_string "La seule couleur possible est : rouge"
@@ -78,8 +78,11 @@ let afficher_couleurs_possibles  taille_liste_couleurs =
 
 let rec affiche_plusieurs_codes_et_reponses liste_codes liste_reponses = 
 	match (liste_codes,liste_reponses) with
-	| ([],[]) -> ()
+	| ([[]],[]) -> print_string ""
 	| (v1 :: liste1,v2 :: liste2) -> afficher_code v1;afficher_reponse v2;print_newline ();affiche_plusieurs_codes_et_reponses liste1 liste2;;
+
+
+
 
 
 end;;

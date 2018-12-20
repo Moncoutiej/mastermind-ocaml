@@ -44,7 +44,8 @@ end =
     type pion = int;;
     type t = pion list;;
 
-  let nombre_pions =  read_int (print_string "Entrez le nombre de pion par code :";print_newline ());;
+  let nombre_pions = let crlscr = Sys.command("clear") in 
+                      read_int (print_string "Entrez le nombre de pion par code :";print_newline ());;
 
   (** Crée une liste de 0 à (n-1)
 * @param nb la longueur de la liste voulue
@@ -73,7 +74,8 @@ end =
                                 else
                                  demande_utilisateur () ;;
 
-  let couleurs_possibles = zero_jusque (demande_utilisateur () );;
+  let couleurs_possibles = let crlscr = Sys.command("clear") in 
+                            zero_jusque (demande_utilisateur () );;
 
     (** Compare deux codes
 * @param code1 un code

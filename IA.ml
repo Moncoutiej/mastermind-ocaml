@@ -1,5 +1,3 @@
-#use "code.ml";;
-
 (** Algorithmes de recherche de code *)
 module IA :
 sig
