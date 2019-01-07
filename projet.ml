@@ -226,4 +226,4 @@ let rec mastermind2 nom1 nom2 tentatives parties =
 end;;
 open Mastermind;;
 (*Mastermind.mastermind "Luca" 6 1 true;;*)
-Mastermind.mastermind2 "Luca" "Johan" 4 1;;
+(*Mastermind.mastermind2 "Luca" "Johan" 4 1;;*)
