@@ -79,7 +79,7 @@ let afficher_couleurs_possibles taille_liste_couleurs =
 let rec affiche_plusieurs_codes_et_reponses liste_codes liste_reponses = 
 	match (liste_codes,liste_reponses) with
 	| ([[]],[]) -> print_string ""
-	| (v1 :: liste1,v2 :: liste2) -> afficher_code v1;afficher_reponse v2;print_newline ();affiche_plusieurs_codes_et_reponses liste1 liste2;;
+	| (v1 :: liste1,v2 :: liste2) -> let res = affiche_plusieurs_codes_et_reponses liste1 liste2 in afficher_code v1;afficher_reponse v2;print_newline ();;
 
 
 
