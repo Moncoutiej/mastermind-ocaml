@@ -10,10 +10,10 @@ type joueurs = {un : joueur; deux : joueur};;
  * @return un enregistrement de 2 joueurs avec au depart 0 points
  *)
 let creationjoueurs nom_joueur = {un = {nom = nom_joueur; points = 0; humain = true}; deux = {nom = "Ordinateur"; points = 0; humain =false}}
-(** Création de 2 joueurs humain
+(** Création de 2 joueurs humains
  * @param nom du 1er joueur humain
  * @param nom du 2eme joueur humain
- * @return un enregistrement de 2 joueurs avec au depart 0 points
+ * @return un enregistrement de 2 joueurs humains avec au depart 0 points
  *)
 let creationjoueurs2 nom1 nom2 =  {un = {nom = nom1; points = 0; humain = true}; deux = {nom = nom2; points = 0; humain =true}};;
 (** Choisit aléatoirement le joueur qui commence
@@ -25,12 +25,12 @@ let commence couplejoueurs = let b = Random.bool() in
                              | {un = _; deux = _} when b -> couplejoueurs
                              | {un = x; deux = y} -> {un = y; deux = x};;
 
-(** Renvoie un nombre de parties paire
+(** Renvoie un nombre de parties paires
 * @param un nombre de parties
 * @return un nombre de parties paires si celui en parametre est impaire
 *)
 let nb_parties_pairs n = if (n mod 2 = 0) then n else (n+1);;
-(** Choisit un methode
+(** Choisit une methode
 * @return le numéro de la méthode
 *)
 let methode = let crlscr = Sys.command("clear") in
@@ -41,12 +41,12 @@ let rec random_code nb_pion couleur_max acc =
     acc
   else
     random_code (nb_pion-1) couleur_max (Random.int couleur_max :: acc);;
-(** Crée un code random selon le nbe de pions et le nbe de couleurs max
+(** Créée un code random selon le nbe de pions et le nbe de couleurs max
 * @return une liste d'entier
 *)
 let creation_random_code = fun () -> random_code Code.nombre_pions (List.length Code.couleurs_possibles) [];;
 
-(** Crée un code (le code de depart) soit via l'ordi soit via l'humain
+(** Créée un code (le code de depart) soit via l'ordi soit via l'humain
 * @param participant de type joueur
 * @return un Code.t
 *)
@@ -56,7 +56,7 @@ let rec saisie_ordi_humain participant = if participant = {nom = "Ordinateur"; p
                                                 in match Code.code_of_string saisie with
                                                     | None -> print_string "Saisie Invalide"; saisie_ordi_humain participant
                                                     | Some(x) -> x;;
-(** Crée un code saisie par l'humain (utilisé quand l'humain veut tenter un code)
+(** Créée un code saisie par l'humain (utilisé quand l'humain veut tenter un code)
 * @param participant humain
 * @return un Code.t
 *)
@@ -86,7 +86,7 @@ let rec run_tentatives_IA tentatives vrai_code participant possibles essaye repo
 * @param le vrai_code
 * @param le participant de type joueur
 * @param la liste des codes essayé au départ vide
-* @param reponse au code tenter (int*int) option
+* @param reponse au code tenté (int*int) option
 * @return retourne le participant de type joueur avec le nbe de pts changé ou pas
 *)
 let rec run_tentatives_humain tentatives vrai_code participant essaye reponses =
@@ -97,7 +97,7 @@ let rec run_tentatives_humain tentatives vrai_code participant essaye reponses =
                                                        | Some(a,b) when a = List.length vrai_code -> let crlscr = Sys.command("clear") in Affichage.affiche_plusieurs_codes_et_reponses essaye reponses; Affichage.afficher_code code; Affichage.afficher_reponse (a,b); print_string "\027[31m   +1 point pour vous \027[37m"; print_newline ();print_newline (); {nom = participant.nom ; points = participant.points+1 ; humain = participant.humain}
                                                        | Some(a,b) -> let crlscr = Sys.command("clear") in Affichage.affiche_plusieurs_codes_et_reponses essaye reponses; Affichage.afficher_code code; Affichage.afficher_reponse (a,b);print_newline ();print_newline (); run_tentatives_humain (e-1) vrai_code participant (code::essaye) ((a,b) :: reponses);;
 
-(** Permet de génerer un nombres de parties donné tout en alternant IA et humain selon le nbe de parties
+(** Permet de génerer un nombre de parties donné tout en alternant IA et humain selon le nbe de parties
 * @param le nombres de parties
 * @param le couple de joueurs de type joueurs
 * @param le nbe de tentatives par parties
@@ -116,7 +116,7 @@ let rec run_parties parties couplejoueurs tentatives  =
                                in run_parties (e-1) {un = participant; deux = couplejoueurs.deux} tentatives;;
 
 
-(** Permet au joueur humain de rentrer les reponses BP MP des tentatives de l'IA
+(** Permet au joueur humain de rentrer les reponses Bien Placée Mal Placée des tentatives de l'IA
 * @param code entré par l'IA
 * @param vrai_code
 * @return renvoie les reponse si c'est bon sinon arret du programme  
@@ -212,8 +212,7 @@ let mastermind nom tentatives parties auto =
 * @param le nom du joueur 1 humain
 * @param le nom du joueur 2 humain
 * @param le nbe de tentatives pour les parties
-* @param le nbe de parties à jouer (tjrs paires)
-* @param boolean permettant de dire si les reponses sont calculé de maniéres auto ou pas
+* @param le nbe de parties à jouer 
 * @return le gagnant
 *)
 let rec mastermind2 nom1 nom2 tentatives parties =
