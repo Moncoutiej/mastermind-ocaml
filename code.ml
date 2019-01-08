@@ -1,87 +1,86 @@
 (** Module de definition d'un code dans le jeu Mastermind *)
 module Code :
 sig
-(** Le type d'un pion *)
-type pion = int
-(** Le type d'un code *)
-type t = pion list
-(** Nombre de pions par code *)
-val nombre_pions : int
-(** Liste des couleurs possibles *)
-val couleurs_possibles : pion list
-(** Compare deux codes
-* @param code1 premier code a comparer
-* @param code2 second code a comparer
-* @return 0 si les deux codes sont identiques,
-un entier positif si [code1] est strictement plus grand que [code2]
-un entier negatif si [code1] est strictement plus petit que [code2]
-*)
-val compare : t -> t -> int
-(** Conversion code vers chaine de caracteres (pour affichage)
-* @param code code a convertir
-* @return la representation en chaine de caracteres de [code]
-*)
-val string_of_code : t -> string
-(** Conversion chaine de caracteres vers code (pour saisie)
-* @param string chaine de caractere saisie
-* @return le code correspondant a la saisie si la conversion est possible
-[None] si la conversion n'est pas possible
-*)
-val code_of_string : string -> t option
-(** La liste de tous les codes permis *)
-val tous : t list;;
-(** La liste de toutes les reponses possibles *)
-val toutes_reponses : (int * int) list 
-(** Calcule la reponse d'un code par rapport au code cache
-* @param code le code propose
-* @param vrai_code le code cache
-* @return un couple (nombre de pions bien places, nombre de pions mal places)
-[None] si la reponse ne peut etre calculee
-*)
-val reponse : t -> t -> (int * int) option
-end =
-  struct 
-    type pion = int;;
-    type t = pion list;;
-
+  (** Le type d'un pion *)
+  type pion = int
+  (** Le type d'un code *)
+  type t = pion list
+  (** Nombre de pions par code *)
+  val nombre_pions : int
+  (** Liste des couleurs possibles *)
+  val couleurs_possibles : pion list
+  (** Compare deux codes
+   * @param code1 premier code a comparer
+   * @param code2 second code a comparer
+   * @return 0 si les deux codes sont identiques,
+   un entier positif si [code1] est strictement plus grand que [code2]
+   un entier negatif si [code1] est strictement plus petit que [code2]
+   *)
+  val compare : t -> t -> int
+  (** Conversion code vers chaine de caracteres (pour affichage)
+   * @param code code a convertir
+   * @return la representation en chaine de caracteres de [code]
+   *)
+  val string_of_code : t -> string
+  (** Conversion chaine de caracteres vers code (pour saisie)
+   * @param string chaine de caractere saisie
+   * @return le code correspondant a la saisie si la conversion est possible
+   [None] si la conversion n'est pas possible
+   *)
+  val code_of_string : string -> t option
+  (** La liste de tous les codes permis *)
+  val tous : t list;;
+  (** La liste de toutes les reponses possibles *)
+  val toutes_reponses : (int * int) list 
+  (** Calcule la reponse d'un code par rapport au code cache
+   * @param code le code propose
+   * @param vrai_code le code cache
+   * @return un couple (nombre de pions bien places, nombre de pions mal places)
+   [None] si la reponse ne peut etre calculee
+   *)
+  val reponse : t -> t -> (int * int) option
+end = struct 
+  type pion = int;;
+  type t = pion list;;
+  
   let nombre_pions = let crlscr = Sys.command("clear") in 
-                      read_int (print_string "Entrez le nombre de pion par code :";print_newline ());;
-
+                     read_int (print_string "Entrez le nombre de pion par code :";print_newline ());;
+  
   (** Crée une liste de 0 à (n-1)
-* @param nb la longueur de la liste voulue
-* @param acc la liste créé
-* @return la liste de 0 jusqu'à (nb-1) ou la liste vide si nb<0
-*)
+   * @param nb la longueur de la liste voulue
+   * @param acc la liste créé
+   * @return la liste de 0 jusqu'à (nb-1) ou la liste vide si nb<0
+   *)
   let rec zero_jusque_rec nb acc =
     match (nb-1) with
     | x when x < 0 -> acc
     | 0 -> 0 :: acc
     | x when x > 0 -> zero_jusque_rec x (x :: acc);;
-
+  
   (** Crée une liste de 0 à (n-1)
-* @param nb la longueur de la liste voulue
-* @return la liste de 0 jusqu'à (nb-1) ou la liste vide si nb<0
-*)
+   * @param nb la longueur de la liste voulue
+   * @return la liste de 0 jusqu'à (nb-1) ou la liste vide si nb<0
+   *)
   let zero_jusque nb = zero_jusque_rec nb [];;
-
+  
   (** demande à l'utilisateur le nombre de couleurs possibles
-* @return le nombre de couleurs possibles entre 0 et 7,
- si l'utilisateur ne rentre pas un nombre entre 0 et 7 il lui est demandé de rerentrer son nombre
-*)
-  let rec demande_utilisateur = fun () -> let v = read_int (print_string "Entrez un nombre de couleurs possibles entre 0 et 7 :";print_newline ())
-                             in if v >= 0 && v <=7 then
-                                  v 
-                                else
-                                 demande_utilisateur () ;;
-
+   * @return le nombre de couleurs possibles entre 0 et 7,
+   si l'utilisateur ne rentre pas un nombre entre 0 et 7 il lui est demandé de rerentrer son nombre
+   *)
+  let rec demande_utilisateur = fun () -> let v = read_int (print_string "Entrez un nombre de couleurs possibles entre 0 et 7 :";print_newline ()) in
+                                          if v >= 0 && v <=7 then
+                                            v 
+                                          else
+                                            demande_utilisateur () ;;
+  
   let couleurs_possibles = let crlscr = Sys.command("clear") in 
-                            zero_jusque (demande_utilisateur () );;
-
-    (** Compare deux codes
-* @param code1 un code
-* @param code2 un code
-* @return la différence de la somme de chaque composante des codes 
-*)
+                           zero_jusque (demande_utilisateur () );;
+  
+  (** Compare deux codes
+   * @param code1 un code
+   * @param code2 un code
+   * @return la différence de la somme de chaque composante des codes 
+   *)
   let rec compare_rec code1 code2 sm1 sm2 =
     match (code1,code2) with
     | ([],[]) -> sm1 - sm2
@@ -94,7 +93,7 @@ end =
                                compare ls1 ls2
                              else
                                compare_rec ls1 ls2 0 0;;
-                               
+  
   let rec string_of_code t = 
     "|"^
       match t with
@@ -111,32 +110,32 @@ end =
   (** Transforme une couleur sous forme de string en numéro
    * @param la chaine de caractère décrivant une couleur
    * @return le numéro associé à la couleur en option,
-  donc [No   ne] si la couleur en entrée est mal écrite ou qu'elle nexiste pas
+   donc [None] si la couleur en entrée est mal écrite ou qu'elle nexiste pas
    *)
   let num_of_couleur_opt s = 
     match s with
-	| "rouge" -> Some(0) 
-	| "vert" -> Some(1) 
-	| "bleu" -> Some(2) 
-	| "jaune" -> Some(3) 
-	| "violet" -> Some(4) 
-	| "blanc" -> Some(5) 
-	| "cyan" -> Some(6) 
-	| _ -> None;;
+    | "rouge" -> Some(0) 
+    | "vert" -> Some(1) 
+    | "bleu" -> Some(2) 
+    | "jaune" -> Some(3) 
+    | "violet" -> Some(4) 
+    | "blanc" -> Some(5) 
+    | "cyan" -> Some(6) 
+    | _ -> None;;
   
   let rec code_of_string s =
     if s = "|" then
       Some([])
     else
-	 let i_deuxieme_separateur = String.index_from s 1 '|' in
-	 let s_prem_couleur = String.sub s 1 (i_deuxieme_separateur -1) in
-	 let suite_s = String.sub s i_deuxieme_separateur (String.rindex s '|' -i_deuxieme_separateur +1) in
-	 let pion = num_of_couleur_opt s_prem_couleur in
-	 let apl_rec = code_of_string suite_s in
-	 match (pion,apl_rec) with
-			| (Some(a),Some(b)) -> Some(a :: b)
-			| _ -> None;;
-
+      let i_deuxieme_separateur = String.index_from s 1 '|' in
+      let s_prem_couleur = String.sub s 1 (i_deuxieme_separateur -1) in
+      let suite_s = String.sub s i_deuxieme_separateur (String.rindex s '|' -i_deuxieme_separateur +1) in
+      let pion = num_of_couleur_opt s_prem_couleur in
+      let apl_rec = code_of_string suite_s in
+      match (pion,apl_rec) with
+      | (Some(a),Some(b)) -> Some(a :: b)
+      | _ -> None;;
+  
   (** Créé le code de longueur nb_pion composé que de zéro
    * @param nb_pion le nombre de pion pour un code
    * @param acc le code créé
@@ -208,7 +207,7 @@ end =
       acc;;
   
   let toutes_reponses = creation_de_toutes_reponses nombre_pions [(0,0)];;
-
+  
   (** Calcule le nombre de pion bien placé
    * @param code1 un code
    * @param code2 un code
@@ -222,7 +221,7 @@ end =
                                (x+1,y,z)
                              else
                                (x,a::y,b::z);;
-
+  
   (** supprime un element d'une liste
    * @param x l'élément à supprimer
    * @param l une liste 
@@ -236,7 +235,7 @@ end =
                      else
                        let res = supprime_un x l in
                        (fst(res),valeur :: snd(res));;
-
+  
   (** Calcul le nombre de mauvaise réponse
    * @param code1 un code
    * @param code2 un code
@@ -265,4 +264,4 @@ end =
                                  Some(x,nb_mauvaise_rep y z 0)
                                else
                                  None;;
-  end;;
+end;;
