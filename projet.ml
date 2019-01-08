@@ -50,7 +50,7 @@ let creation_random_code = fun () -> random_code Code.nombre_pions (List.length 
 *)
 let rec saisie_ordi_humain participant = if participant = {nom = "Ordinateur"; points = participant.points; humain =false}
                                            then (print_string "L'ordinateur crée le code"; print_newline ();print_newline (); creation_random_code ())
-                                           else let saisie = read_line (print_string ("\027[31m C'est au tour de : "^participant.nom^"\027[37m"); print_newline(); print_newline();Affichage.afficher_couleurs_possibles (List.length Code.couleurs_possibles); print_newline ();print_string "\027[33mCréez\027[37m le code caché en l'ecrivant de la forme |rouge|bleu|..| : ")
+                                           else let saisie = read_line (print_string ("\027[33m C'est au tour de : "^participant.nom^"\027[37m"); print_newline(); print_newline();Affichage.afficher_couleurs_possibles (List.length Code.couleurs_possibles); print_newline ();print_string "\027[31mCréez\027[37m le code caché en l'écrivant de la forme |rouge|bleu|..| : ")
                                                 in let crlscr = Sys.command("clear") 
                                                      in match Code.code_of_string saisie with
                                                       | None -> print_string "Saisie Invalide"; saisie_ordi_humain participant
@@ -59,7 +59,7 @@ let rec saisie_ordi_humain participant = if participant = {nom = "Ordinateur"; p
 * @param participant humain
 * @return un Code.t
 *)
-let rec saisie_humain participant = let saisie = read_line (print_string ("\027[33m C'est au tour de : "^participant.nom^"\027[37m"); print_newline(); print_newline() ; Affichage.afficher_couleurs_possibles (List.length Code.couleurs_possibles); print_newline (); print_string "\027[33mTentez\027[37m un code en l'ecrivant de la forme |rouge|bleu|..| : " )
+let rec saisie_humain participant = let saisie = read_line (print_string ("\027[33m C'est au tour de : "^participant.nom^"\027[37m"); print_newline(); print_newline() ; Affichage.afficher_couleurs_possibles (List.length Code.couleurs_possibles); print_newline (); print_string "\027[33mTentez\027[37m un code en l'écrivant de la forme |rouge|bleu|..| : " )
                                                 in match Code.code_of_string saisie with
                                                     | None -> print_string "Saisie Invalide"; saisie_humain participant
                                                     | Some(x) -> x;;
@@ -120,10 +120,10 @@ let rec run_parties parties couplejoueurs tentatives  =
 * @param vrai_code
 * @return renvoie les reponse si c'est bon sinon arret du programme  
 *)
-let rec reponse_humain code vrai_code = let (a,b) = (read_int ((print_string "Entrez le nombre de pions bien placés : ")), read_int ((print_string "Entrez le nombre de pions mal placés : "))) in
+let rec reponse_humain code vrai_code = let (a,b) = Affichage.afficher_code vrai_code; print_string " Code proposé / Code à deviner "; print_newline(); (read_int ((print_string "Entrez le nombre de pions bien placés : ")), read_int ((print_string "Entrez le nombre de pions mal placés : "))) in
                                         match Code.reponse code vrai_code with
                                         | None -> failwith "reponse_humain"
-                                        | Some(x,y) when (a<>x) || (b<> y) -> failwith "Vous vous êtes trompés ou vous avez essayé de tricher !!!"
+                                        | Some(x,y) when (a<>x) || (b<> y) -> print_string "Vous vous êtes trompé ou vous avez essayé de tricher !!! "; failwith "Game Over" 
                                         | Some(x,y) when (a = x) && (b = y) -> Some(x,y);;
 
 
@@ -142,7 +142,7 @@ let rec run_reponse_pas_auto tentatives vrai_code participant possibles essaye r
   | e -> let code = (IA.choix methode essaye possibles) in Affichage.afficher_code code; print_newline (); let reponse = reponse_humain code vrai_code in match reponse with
                                                        | None -> failwith "run_tentatives_IA"
                                                        | Some(a,b) when a = List.length vrai_code -> Affichage.afficher_code code; Affichage.afficher_reponse (a,b); print_string "\027[31m   +1 point pour l'ordinateur \027[37m" ; print_newline ();print_newline (); {nom = participant.nom ; points = participant.points+1 ; humain = participant.humain}
-                                                       | Some(a,b) -> let nw_possibles = IA.filtre methode (code,reponse) possibles in Affichage.afficher_code code; Affichage.afficher_reponse (a,b); print_newline (); run_tentatives_IA (e-1) vrai_code participant nw_possibles (code :: essaye) (reponse :: reponses);;
+                                                       | Some(a,b) -> let nw_possibles = IA.filtre methode (code,reponse) possibles in run_reponse_pas_auto (e-1) vrai_code participant nw_possibles (code :: essaye) (reponse :: reponses);;
 
 
 
