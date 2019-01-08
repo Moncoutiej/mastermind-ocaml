@@ -23,26 +23,8 @@ val affiche_plusieurs_codes_et_reponses : Code.t list -> (int * int) list -> uni
 val afficher_couleurs_possibles : int -> unit 
 
 end
-
-
  = struct
-	
 
-(*
-let int_of_couleur valeur = 
-	match valeur with
-	| 1 -> Graphics.set_color Graphics.red 
-	| 2 -> Graphics.set_color Graphics.green
-	| 3 -> Graphics.set_color Graphics.blue
-	| 4 -> Graphics.set_color Graphics.yellow
-	| 5 -> Graphics.set_color Graphics.magenta
-	| 6 -> Graphics.set_color Graphics.white
-	| _ -> Graphics.set_color Graphics.cyan;;
-*)
-
-(** Afffiche un code dans le terminal tel quel avec des points colorés
-* @param code à écrire dans le terminal
-*)
 let rec afficher_code_rec code =
 	match code with
 	| [] -> print_string "\027[37m"
@@ -75,21 +57,10 @@ let afficher_couleurs_possibles taille_liste_couleurs =
 	| _ -> failwith "erreur taille liste couleur";;
 
 
-
 let rec affiche_plusieurs_codes_et_reponses liste_codes liste_reponses = 
 	match (liste_codes,liste_reponses) with
 	| ([[]],[]) -> print_string ""
 	| (v1 :: liste1,v2 :: liste2) -> let res = affiche_plusieurs_codes_et_reponses liste1 liste2 in afficher_code v1;afficher_reponse v2;print_newline ();;
 
-
-
-
-
 end;;
 open Affichage;;
-
-(*
-Graphics.open_graph " 1048x725";;
-Affichage.int_of_couleur 2;;
-point_color 200 200;;
-close_graph;;*)

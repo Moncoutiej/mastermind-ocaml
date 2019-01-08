@@ -30,11 +30,9 @@ let commence couplejoueurs = let b = Random.bool() in
 * @return un nombre de parties paires si celui en parametre est impaire
 *)
 let nb_parties_pairs n = if (n mod 2 = 0) then n else (n+1);;
-(** Choisit une methode
-* @return le numéro de la méthode
+(** Choisit une methode : 0 -> Naïf, 1 -> Knuth, 2 -> Knuth min-min, 3 -> Naïf random
 *)
-let methode = let crlscr = Sys.command("clear") in
-               read_int ((print_string "Choisir la méthode, 1 : Naïf | 2 : Knuth : "))
+let methode = 0;;
 
 let rec random_code nb_pion couleur_max acc =
   if nb_pion = 0 then
@@ -51,16 +49,17 @@ let creation_random_code = fun () -> random_code Code.nombre_pions (List.length 
 * @return un Code.t
 *)
 let rec saisie_ordi_humain participant = if participant = {nom = "Ordinateur"; points = participant.points; humain =false}
-                                           then creation_random_code ()
-                                           else let saisie = read_line (Affichage.afficher_couleurs_possibles (List.length Code.couleurs_possibles); print_newline ();print_string "Creez le code caché en l'ecrivant de la forme |rouge|bleu|..| : ")
-                                                in match Code.code_of_string saisie with
-                                                    | None -> print_string "Saisie Invalide"; saisie_ordi_humain participant
-                                                    | Some(x) -> x;;
+                                           then (print_string "L'ordinateur crée le code"; print_newline ();print_newline (); creation_random_code ())
+                                           else let saisie = read_line (print_string ("\027[31m C'est au tour de : "^participant.nom^"\027[37m"); print_newline(); print_newline();Affichage.afficher_couleurs_possibles (List.length Code.couleurs_possibles); print_newline ();print_string "\027[33mCréez\027[37m le code caché en l'ecrivant de la forme |rouge|bleu|..| : ")
+                                                in let crlscr = Sys.command("clear") 
+                                                     in match Code.code_of_string saisie with
+                                                      | None -> print_string "Saisie Invalide"; saisie_ordi_humain participant
+                                                      | Some(x) -> x;;
 (** Créée un code saisie par l'humain (utilisé quand l'humain veut tenter un code)
 * @param participant humain
 * @return un Code.t
 *)
-let rec saisie_humain participant = let saisie = read_line (Affichage.afficher_couleurs_possibles (List.length Code.couleurs_possibles); print_newline (); print_string "Tentez un code en l'ecrivant de la forme |rouge|bleu|..| : " )
+let rec saisie_humain participant = let saisie = read_line (print_string ("\027[33m C'est au tour de : "^participant.nom^"\027[37m"); print_newline(); print_newline() ; Affichage.afficher_couleurs_possibles (List.length Code.couleurs_possibles); print_newline (); print_string "\027[33mTentez\027[37m un code en l'ecrivant de la forme |rouge|bleu|..| : " )
                                                 in match Code.code_of_string saisie with
                                                     | None -> print_string "Saisie Invalide"; saisie_humain participant
                                                     | Some(x) -> x;;
@@ -121,10 +120,10 @@ let rec run_parties parties couplejoueurs tentatives  =
 * @param vrai_code
 * @return renvoie les reponse si c'est bon sinon arret du programme  
 *)
-let rec reponse_humain code vrai_code = let (a,b) = (read_int ((print_string "Entrez le nombre de bien placé : ")), read_int ((print_string "Entrez le nombre de mal placé : "))) in
+let rec reponse_humain code vrai_code = let (a,b) = (read_int ((print_string "Entrez le nombre de pions bien placés : ")), read_int ((print_string "Entrez le nombre de pions mal placés : "))) in
                                         match Code.reponse code vrai_code with
                                         | None -> failwith "reponse_humain"
-                                        | Some(x,y) when (a<>x) || (b<> y) -> failwith "Vous vous etes trompe ou vous avez essaye de tricher !!!"
+                                        | Some(x,y) when (a<>x) || (b<> y) -> failwith "Vous vous êtes trompés ou vous avez essayé de tricher !!!"
                                         | Some(x,y) when (a = x) && (b = y) -> Some(x,y);;
 
 
@@ -173,7 +172,7 @@ let rec run_parties_pas_auto parties couplejoueurs tentatives =
 *)
 let gagnant couplejoueurs =
   match couplejoueurs.un.points with
-  | points when (points = couplejoueurs.deux.points) -> print_string ("\027[33m Il y'a égalité \027[37m")
+  | points when (points = couplejoueurs.deux.points) -> print_string ("\027[33m Il y a égalité \027[37m")
   | points when (points < couplejoueurs.deux.points) -> print_string ("\027[33m Le gagnant est : "^couplejoueurs.deux.nom^"\027[37m")
   | points when (points > couplejoueurs.deux.points) -> print_string ("\027[33m Le gagnant est : "^couplejoueurs.un.nom^"\027[37m") ;;
 
@@ -224,5 +223,5 @@ let rec mastermind2 nom1 nom2 tentatives parties =
 
 end;;
 open Mastermind;;
-(*Mastermind.mastermind "Luca" 6 1 true;;*)
+Mastermind.mastermind "Luca" 6 1 false;;
 (*Mastermind.mastermind2 "Luca" "Johan" 4 1;;*)
