@@ -1,6 +1,12 @@
 #use "affichage.ml";;
 #use "IA.ml";;
-module Mastermind = struct
+module Mastermind : sig 
+
+val mastermind : string -> int -> int -> bool -> unit  
+
+val mastermind2 : string -> string -> int -> int -> unit  
+
+end = struct
 
 type joueur = {nom : string; points : int; humain : bool};;
 type joueurs = {un : joueur; deux : joueur};;
@@ -52,17 +58,22 @@ let rec saisie_ordi_humain participant = if participant = {nom = "Ordinateur"; p
                                            then (print_string "L'ordinateur crée le code"; print_newline ();print_newline (); creation_random_code ())
                                            else let saisie = read_line (print_string ("\027[33m C'est au tour de : "^participant.nom^"\027[37m"); print_newline(); print_newline();Affichage.afficher_couleurs_possibles (List.length Code.couleurs_possibles); print_newline ();print_string "\027[31mCréez\027[37m le code caché en l'écrivant de la forme |rouge|bleu|..| : ")
                                                 in let crlscr = Sys.command("clear") 
-                                                     in match Code.code_of_string saisie with
-                                                      | None -> print_string "Saisie Invalide"; saisie_ordi_humain participant
-                                                      | Some(x) -> x;;
+                                                     in let code_opt = Code.code_of_string saisie 
+                                                          in match code_opt with
+                                                              | None -> print_string "Saisie Invalide"; print_newline (); print_newline (); saisie_ordi_humain participant
+                                                              | Some(x) when List.length x <> Code.nombre_pions -> print_string "Saisie Invalide"; print_newline (); print_newline (); saisie_ordi_humain participant
+                                                              | Some(x) -> x;;
 (** Créée un code saisie par l'humain (utilisé quand l'humain veut tenter un code)
 * @param participant humain
 * @return un Code.t
 *)
 let rec saisie_humain participant = let saisie = read_line (print_string ("\027[33m C'est au tour de : "^participant.nom^"\027[37m"); print_newline(); print_newline() ; Affichage.afficher_couleurs_possibles (List.length Code.couleurs_possibles); print_newline (); print_string "\027[33mTentez\027[37m un code en l'écrivant de la forme |rouge|bleu|..| : " )
-                                                in match Code.code_of_string saisie with
-                                                    | None -> print_string "Saisie Invalide"; saisie_humain participant
-                                                    | Some(x) -> x;;
+                                                in let crlscr = Sys.command("clear") 
+                                                     in let code_opt = Code.code_of_string saisie
+                                                      in match code_opt with
+                                                                   | None -> print_string "Saisie Invalide"; print_newline (); print_newline (); saisie_humain participant
+                                                            | Some(x) when List.length x <> Code.nombre_pions -> print_string "Saisie Invalide"; print_newline (); print_newline (); saisie_ordi_humain participant
+                                                             | Some(x) -> x;;
 
 (** Permet à l'IA de tenter des codes
 * @param le nombres de tentatives
@@ -223,5 +234,5 @@ let rec mastermind2 nom1 nom2 tentatives parties =
 
 end;;
 open Mastermind;;
-Mastermind.mastermind "Luca" 6 1 false;;
-(*Mastermind.mastermind2 "Luca" "Johan" 4 1;;*)
+(*Mastermind.mastermind "Luca" 6 1 false;;*)
+Mastermind.mastermind2 "Hugo" "Johan" 6 2;;
