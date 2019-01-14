@@ -1,4 +1,4 @@
-(** Algorithmes de recherche de code *)
+ (** Algorithmes de recherche de code *)
 module IA :
 sig
   (** Nombre d'algorithmes developpes *)
@@ -74,8 +74,32 @@ end = struct
    * @param possibles la liste courantes des codes possibles
    * @return le poids maximum du code
    *)
-  let poids code possibles = let deb = filtre_choix_knuth code (List.hd (Code.toutes_reponses)) possibles 0 and fin = List.tl Code.toutes_reponses in
+  let poids_init code possibles = let deb = filtre_choix_knuth code (List.hd (Code.toutes_reponses)) possibles 0 and fin = List.tl Code.toutes_reponses in
                              List.fold_left (fun acc x -> let y = filtre_choix_knuth code x possibles 0 in if acc > y then acc else y) deb fin;;
+
+  (** Calcule le poids d'un code par rapport à la liste des réponses posiible et des codes possibles 
+   * @param code le code pour le poids
+   * @param possibles la liste courantes des codes possibles
+   * @return le poids maximum du code
+   *)
+  let rec poids_test_rec pm liste code possibles acc =
+    match liste with
+    | [] -> acc
+    | v :: ls -> (match filtre_choix_knuth code v possibles 0 with
+                 | x when x > pm -> x
+                 | x when acc < x -> poids_test_rec pm ls code possibles x
+                 | _ -> poids_test_rec pm ls code possibles acc);;
+             
+  (** Calcule le poids d'un code par rapport à la liste des réponses posiible et des codes possibles 
+   * @param code le code pour le poids
+   * @param possibles la liste courantes des codes possibles
+   * @return le poids maximum du code avec un système d'élagage
+   *)
+  let poids pm code possibles = let acc = filtre_choix_knuth code (List.hd (Code.toutes_reponses)) possibles 0 in
+                                     if pm < acc then
+                                       acc
+                                     else
+                                       poids_test_rec pm (List.tl (Code.toutes_reponses)) code possibles acc;;
   
   (** Calcule le poids d'un code par rapport à la liste des réponses posiible et des codes possibles 
    * @param code le code pour le poids
@@ -96,13 +120,14 @@ end = struct
     match liste_tous with
     | [] -> snd(res)
     | v :: ls when existe v essais -> choix_knuth_rec essais possibles ls res
-    | v :: ls -> let x = poids v possibles in match x with
+    | v :: ls -> let x = poids (fst(res)) v possibles in match x with
                                               | x when x > fst(res) -> choix_knuth_rec essais possibles ls res
                                               | x when x = fst(res) -> if (Code.compare v (snd(res))) < 0 then
                                                                          choix_knuth_rec essais possibles ls (x,v)
                                                                        else
                                                                          choix_knuth_rec essais possibles ls res
                                               | _ -> choix_knuth_rec essais possibles ls (x,v);;
+
   
   (** Choisie le prochain code à essayer
    * @param essais la liste courante des codes déjà essayé
@@ -134,9 +159,9 @@ end = struct
     | [] -> failwith "choix_knuth"
     | v :: ls when existe v essais -> choix_knuth methode essais possibles ls
     | v :: ls -> if methode = 1 then
-                   choix_knuth_rec essais possibles ls ((poids v possibles),v)
+                   choix_knuth_rec essais possibles ls ((poids_init v possibles), v)
                  else
-                   choix_knuth_rec_2 essais possibles ls ((poids v possibles),v);; 
+                   choix_knuth_rec_2 essais possibles ls ((poids_2 v possibles),v);; 
   
   let choix methode essais possibles =
     match methode with
