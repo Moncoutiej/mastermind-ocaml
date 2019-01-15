@@ -1,4 +1,3 @@
-#use "code.ml"
 module Affichage : sig
   
   (** Afffiche un code avec des séparateurs au début et à la fin
