@@ -104,8 +104,7 @@ end = struct
       | 3 :: liste -> "jaune"^string_of_code liste
       | 4 :: liste -> "violet"^string_of_code liste
       | 5 :: liste -> "blanc"^string_of_code liste
-      | 6 :: liste -> "cyan"^string_of_code liste
-      | _ -> failwith "pas de couleur associee";;
+      | 6 :: liste -> "cyan"^string_of_code liste;; (*paterne non exhaustif car les chiffres ne doivent pas pouvoir dépasser la limite*)
   
   (** Transforme une couleur sous forme de string en numéro
    * @param la chaine de caractère décrivant une couleur
@@ -176,8 +175,7 @@ end = struct
    *)
   let rec fin_liste liste =
     match liste with
-    | [] -> failwith "fin_liste"
-    | v :: [] -> v
+    | v :: [] -> v (*paterne non exhaustif car il ne peut pas y avoir de liste vide en paramètre*)
     | v :: ls -> fin_liste ls;;
   
   let tous = let code = code_initial nombre_pions [] in
@@ -215,7 +213,7 @@ end = struct
    *)
   let rec nb_bonne_rep code1 code2 =
     match (code1,code2) with
-    | ([],[]) -> (0,[],[])
+    | ([],[]) -> (0,[],[]) (*paterne non exhaustif car la validité du code est vérifié avant*)
     | (a :: ls1,b :: ls2) -> let (x,y,z) = nb_bonne_rep ls1 ls2 in
                              if a = b then
                                (x+1,y,z)

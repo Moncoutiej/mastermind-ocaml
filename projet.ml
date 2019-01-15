@@ -82,7 +82,7 @@ end = struct
                                       | Some(x) when List.length x <> Code.nombre_pions -> print_string "Saisie Invalide"; print_newline (); print_newline (); saisie_ordi_humain participant
                                       | Some(x) -> x;;
 
-  (** Permet à l'IA de tenter des codes
+  (** Permet à l'IA de tenter des codes, paterne non exhaustif car la fonction reponse ne doit pas pouvoir renvoyer None
    * @param le nombres de tentatives
    * @param le vrai_code
    * @param le participant de type joueur
@@ -97,12 +97,11 @@ end = struct
     | e -> let code = (IA.choix methode essaye possibles) in
            let reponse = Code.reponse code vrai_code in
            match reponse with
-           | None -> failwith "run_tentatives_IA"
            | Some(a,b) when a = List.length vrai_code -> Affichage.afficher_code code; Affichage.afficher_reponse (a,b); print_string "\027[31m   +1 point pour l'ordinateur \027[37m" ; print_newline ();print_newline (); {nom = participant.nom ; points = participant.points+1 ; humain = participant.humain}
            | Some(a,b) -> let nw_possibles = IA.filtre methode (code,reponse) possibles in
                           Affichage.afficher_code code; Affichage.afficher_reponse (a,b); print_newline (); run_tentatives_IA (e-1) vrai_code participant nw_possibles (code :: essaye) (reponse :: reponses);;
   
-  (** Permet à l'humain  de tenter des codes
+  (** Permet à l'humain  de tenter des codes, paterne non exhaustif car la fonction reponse ne doit pas pouvoir renvoyer None
    * @param le nombres de tentatives
    * @param le vrai_code
    * @param le participant de type joueur
@@ -116,7 +115,6 @@ end = struct
     | e -> let code = (saisie_humain participant) in
            let reponse = Code.reponse code vrai_code in
            match reponse with
-           | None -> failwith "run_tentatives_humain"
            | Some(a,b) when a = List.length vrai_code -> let crlscr = Sys.command("clear") in
                                                          Affichage.affiche_plusieurs_codes_et_reponses essaye reponses; Affichage.afficher_code code; Affichage.afficher_reponse (a,b); print_string "\027[31m   +1 point pour vous \027[37m"; print_newline ();print_newline (); {nom = participant.nom ; points = participant.points+1 ; humain = participant.humain}
            | Some(a,b) -> let crlscr = Sys.command("clear") in
@@ -148,12 +146,12 @@ end = struct
    *)
   let rec reponse_humain code vrai_code = let (a,b) = Affichage.afficher_code vrai_code; print_string " Code proposé / Code à deviner "; print_newline(); (read_int ((print_string "Entrez le nombre de pions bien placés : ")), read_int ((print_string "Entrez le nombre de pions mal placés : "))) in
                                           match Code.reponse code vrai_code with
-                                          | None -> failwith "reponse_humain"
-                                          | Some(x,y) when (a<>x) || (b<> y) -> print_string "Vous vous êtes trompé ou vous avez essayé de tricher !!! "; failwith "Game Over" 
-                                          | Some(x,y) when (a = x) && (b = y) -> Some(x,y);;
+                                          | None -> (false,None)
+                                          | Some(x,y) when (a<>x) || (b<> y) -> print_string "Vous vous êtes trompé ou vous avez essayé de tricher !!! "; print_newline (); (false,Some(x,y)) 
+                                          | Some(x,y) when (a = x) && (b = y) -> (true,Some(x,y));;
 
 
-  (** Permet à l'humain de repondre aux tentatives de l'IA sans que ça le fasse automatiquement
+  (** Permet à l'humain de repondre aux tentatives de l'IA sans que ça le fasse automatiquement, paterne non exhaustif car la fonction reponse ne doit pas pouvoir renvoyer None
    * @param le nombres de tentatives
    * @param le vrai_code
    * @param le participant de type joueur
@@ -168,11 +166,10 @@ end = struct
     | e -> let code = (IA.choix methode essaye possibles) in
            Affichage.afficher_code code; print_newline (); let reponse = reponse_humain code vrai_code in
                                                            match reponse with
-                                                           | None -> failwith "run_tentatives_IA"
-                                                           | Some(a,b) when a = List.length vrai_code -> Affichage.afficher_code code; Affichage.afficher_reponse (a,b); print_string "\027[31m   +1 point pour l'ordinateur \027[37m" ; print_newline ();print_newline (); {nom = participant.nom ; points = participant.points+1 ; humain = participant.humain}
-                                                           | Some(a,b) -> let nw_possibles = IA.filtre methode (code,reponse) possibles in
-                                                                          run_reponse_pas_auto (e-1) vrai_code participant nw_possibles (code :: essaye) (reponse :: reponses);;
-
+                                                           | (true,Some(a,b)) when a = List.length vrai_code -> Affichage.afficher_code code; Affichage.afficher_reponse (a,b); print_string "\027[31m   +1 point pour l'ordinateur \027[37m" ; print_newline ();print_newline (); {nom = participant.nom ; points = participant.points+1 ; humain = participant.humain}
+                                                           | (true,Some(a,b)) -> let nw_possibles = IA.filtre methode (code,Some(a,b)) possibles in
+                                                                          run_reponse_pas_auto (e-1) vrai_code participant nw_possibles (code :: essaye) (Some(a,b) :: reponses)
+                                                           | (false,Some(a,b)) -> Affichage.afficher_code code; Affichage.afficher_reponse (a,b); print_string "\027[31m   +1 point pour l'ordinateur \027[37m" ; print_newline ();print_newline (); {nom = participant.nom ; points = participant.points+1 ; humain = participant.humain};;
 
 
   (** Permet de génerer un nombres de parties donné tout en alternant IA et humain selon le nbe de parties et que l'humain controle les les tentatives de l'IA

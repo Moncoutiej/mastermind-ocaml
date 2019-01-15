@@ -43,7 +43,7 @@ end = struct
   
   
   let afficher_couleurs_possibles taille_liste_couleurs = 
-    match taille_liste_couleurs with
+    match taille_liste_couleurs with (*paterne non exhaustif car la variable est comprise entre 0 et 7*)
     | 0 -> print_string "aucunes couleurs"
     | 1 -> print_string "La seule couleur possible est : rouge"
     | 2 -> print_string "Les couleurs possibles sont : rouge, vert"
@@ -51,8 +51,7 @@ end = struct
     | 4 -> print_string "Les couleurs possibles sont : rouge, vert, bleu, jaune"
     | 5 -> print_string "Les couleurs possibles sont : rouge, vert, bleu, jaune, violet"
     | 6 -> print_string "Les couleurs possibles sont : rouge, vert, bleu, jaune, violet, blanc"
-    | 7 -> print_string "Les couleurs possibles sont : rouge, vert, bleu, jaune, violet, blanc, cyan"
-    | _ -> failwith "erreur taille liste couleur";;
+    | 7 -> print_string "Les couleurs possibles sont : rouge, vert, bleu, jaune, violet, blanc, cyan";;
   
   
   let rec affiche_plusieurs_codes_et_reponses liste_codes liste_reponses = 
