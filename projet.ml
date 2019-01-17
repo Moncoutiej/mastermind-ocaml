@@ -253,5 +253,3 @@ end = struct
 
 end;;
 open Mastermind;;
-Mastermind.mastermind "Luca" 6 1 true;;
-(*Mastermind.mastermind2 "Julian" "Johan" 6 2;;*)

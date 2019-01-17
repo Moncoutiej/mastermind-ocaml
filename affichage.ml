@@ -24,7 +24,7 @@ module Affichage : sig
 end = struct
   
   let rec afficher_code_rec code =
-    match code with
+    match code with (*paterne non exhaustif car la variable est comprise entre 0 et 7*)
     | [] -> print_string "\027[37m"
     | 0 :: liste -> print_string ("\027[31m ● ");afficher_code_rec liste
     | 1 :: liste -> print_string ("\027[32m ● ");afficher_code_rec liste
