@@ -5,7 +5,9 @@ module Mastermind : sig
   
   val mastermind : string -> int -> int -> bool -> unit  
     
-  val mastermind2 : string -> string -> int -> int -> unit  
+  val mastermind2 : string -> string -> int -> int -> unit
+
+  val mastermind3 : int -> int -> unit  
     
 end = struct
   
@@ -24,6 +26,12 @@ end = struct
    *)
                                  
   let creationjoueurs2 nom1 nom2 =  {un = {nom = nom1; points = 0; humain = true}; deux = {nom = nom2; points = 0; humain =true}};;
+  (** Création de 3 joueurs humains
+   * @return un enregistrement de 2 ordinateurs avec au depart 0 points
+   *)
+                                 
+  let creationjoueurs3 =  {un = {nom = "Ordinateur1"; points = 0; humain = false}; deux = {nom = "Ordinateur2"; points = 0; humain =false}};;
+
   (** Choisit aléatoirement le joueur qui commence
    * @param couplejoueurs de type joueurs
    * @return couplejoueurs de type joueurs
@@ -59,8 +67,8 @@ end = struct
    * @param participant de type joueur
    * @return un Code.t
    *)
-  let rec saisie_ordi_humain participant = if participant = {nom = "Ordinateur"; points = participant.points; humain =false} then
-                                             (print_string "L'ordinateur crée le code"; print_newline ();print_newline (); creation_random_code ())
+  let rec saisie_ordi_humain participant = if participant = {nom = "Ordinateur"; points = participant.points; humain =false} or participant = {nom = "Ordinateur1"; points = participant.points; humain =false} or participant = {nom = "Ordinateur2"; points = participant.points; humain =false} then
+                                             (print_string ("L'"^participant.nom^" crée le code"); print_newline ();print_newline (); creation_random_code ())
                                            else
                                              let saisie = read_line (print_string ("\027[33m C'est au tour de : "^participant.nom^"\027[37m"); print_newline(); print_newline();Affichage.afficher_couleurs_possibles (List.length Code.couleurs_possibles); print_newline ();print_string "\027[31mCréez\027[37m le code caché en l'écrivant de la forme |rouge|bleu|..| : ") in
                                              let crlscr = Sys.command("clear") in
@@ -97,7 +105,7 @@ end = struct
     | e -> let code = (IA.choix methode essaye possibles) in
            let reponse = Code.reponse code vrai_code in
            match reponse with
-           | Some(a,b) when a = List.length vrai_code -> Affichage.afficher_code code; Affichage.afficher_reponse (a,b); print_string "\027[31m   +1 point pour l'ordinateur \027[37m" ; print_newline ();print_newline (); {nom = participant.nom ; points = participant.points+1 ; humain = participant.humain}
+           | Some(a,b) when a = List.length vrai_code -> Affichage.afficher_code code; Affichage.afficher_reponse (a,b); print_string ("\027[31m   +1 point pour "^participant.nom^"\027[37m") ; print_newline ();print_newline (); {nom = participant.nom ; points = participant.points+1 ; humain = participant.humain}
            | Some(a,b) -> let nw_possibles = IA.filtre methode (code,reponse) possibles in
                           Affichage.afficher_code code; Affichage.afficher_reponse (a,b); print_newline (); run_tentatives_IA (e-1) vrai_code participant nw_possibles (code :: essaye) (reponse :: reponses);;
   
@@ -166,10 +174,10 @@ end = struct
     | e -> let code = (IA.choix methode essaye possibles) in
            Affichage.afficher_code code; print_newline (); let reponse = reponse_humain code vrai_code in
                                                            match reponse with
-                                                           | (true,Some(a,b)) when a = List.length vrai_code -> Affichage.afficher_code code; Affichage.afficher_reponse (a,b); print_string "\027[31m   +1 point pour l'ordinateur \027[37m" ; print_newline ();print_newline (); {nom = participant.nom ; points = participant.points+1 ; humain = participant.humain}
+                                                           | (true,Some(a,b)) when a = List.length vrai_code -> Affichage.afficher_code code; Affichage.afficher_reponse (a,b); print_string ("\027[31m   +1 point pour "^participant.nom^" \027[37m") ; print_newline ();print_newline (); {nom = participant.nom ; points = participant.points+1 ; humain = participant.humain}
                                                            | (true,Some(a,b)) -> let nw_possibles = IA.filtre methode (code,Some(a,b)) possibles in
                                                                           run_reponse_pas_auto (e-1) vrai_code participant nw_possibles (code :: essaye) (Some(a,b) :: reponses)
-                                                           | (false,Some(a,b)) -> Affichage.afficher_code code; Affichage.afficher_reponse (a,b); print_string "\027[31m   +1 point pour l'ordinateur \027[37m" ; print_newline ();print_newline (); {nom = participant.nom ; points = participant.points+1 ; humain = participant.humain};;
+                                                           | (false,Some(a,b)) -> Affichage.afficher_code code; Affichage.afficher_reponse (a,b); print_string ("\027[31m   +1 point pour "^participant.nom^"\027[37m") ; print_newline ();print_newline (); {nom = participant.nom ; points = participant.points+1 ; humain = participant.humain};;
 
 
   (** Permet de génerer un nombres de parties donné tout en alternant IA et humain selon le nbe de parties et que l'humain controle les les tentatives de l'IA
@@ -199,8 +207,8 @@ end = struct
   let gagnant couplejoueurs =
     match couplejoueurs.un.points with
     | points when (points = couplejoueurs.deux.points) -> print_string ("\027[33m Il y a égalité \027[37m")
-    | points when (points < couplejoueurs.deux.points) -> print_string ("\027[33m Le gagnant est : "^couplejoueurs.deux.nom^"\027[37m")
-    | points when (points > couplejoueurs.deux.points) -> print_string ("\027[33m Le gagnant est : "^couplejoueurs.un.nom^"\027[37m") ;;
+    | points when (points < couplejoueurs.deux.points) -> print_string ("\027[33m Le gagnant est : "^couplejoueurs.deux.nom^"\027[37m avec \027[33m"^string_of_int couplejoueurs.deux.points^"\027[37m points")
+    | points when (points > couplejoueurs.deux.points) -> print_string ("\027[33m Le gagnant est : "^couplejoueurs.un.nom^"\027[37m avec \027[33m"^string_of_int couplejoueurs.un.points^"\027[37m points") ;;
 
 
 
@@ -247,6 +255,33 @@ end = struct
     let couplejoueurs = commence participants in
     let partie_pairs = nb_parties_pairs parties in
     let winner = run_parties_pvp partie_pairs couplejoueurs tentatives in
+    gagnant winner;;
+
+  (** Permet de génerer un nombres de parties donné tout en alternant l'ordinateur1 et l'ordinateur2 selon le nbe de parties
+   * @param le nombres de parties
+   * @param le couple de joueurs de type joueurs
+   * @param le nbe de tentatives par parties
+   * @return retourne le couplejoueurs de type joueurs
+   *)
+  let rec run_parties_eve parties couplejoueurs tentatives =
+    match parties with
+    | 0 -> couplejoueurs
+    | e when (e mod 2 = 0) -> let participant = run_tentatives_IA tentatives (saisie_ordi_humain couplejoueurs.un) couplejoueurs.deux Code.tous [[]] [] in
+                                                         run_parties_eve (e-1) {un = couplejoueurs.un; deux = participant} tentatives
+    | e when (e mod 2 <> 0) -> let participant = run_tentatives_IA tentatives (saisie_ordi_humain couplejoueurs.deux) couplejoueurs.un Code.tous [[]] [] in
+                                                            run_parties_eve (e-1) {un = participant; deux = couplejoueurs.deux} tentatives;;
+
+  (** Permet de jouer au mastermind IA vs IA
+   * @param le nbe de tentatives pour les parties
+   * @param le nbe de parties à jouer 
+   * @return le gagnant
+   *)
+  let rec mastermind3 tentatives parties =
+    let crlscr = Sys.command("clear") in
+    let participants = creationjoueurs3  in
+    let couplejoueurs = commence participants in
+    let partie_pairs = nb_parties_pairs parties in
+    let winner = run_parties_eve partie_pairs couplejoueurs tentatives in
     gagnant winner;;
 
 
