@@ -94,17 +94,16 @@ end = struct
                              else
                                compare_rec ls1 ls2 0 0;;
   
-  let rec string_of_code t = 
-    "|"^
-      match t with
+  let rec string_of_code code = 
+      match code with (*paterne non exhaustif car la variable est comprise entre 0 et 7*)
       | [] -> ""
-      | 0 :: liste -> "rouge"^string_of_code liste
-      | 1 :: liste -> "vert"^string_of_code liste
-      | 2 :: liste -> "bleu"^string_of_code liste
-      | 3 :: liste -> "jaune"^string_of_code liste
-      | 4 :: liste -> "violet"^string_of_code liste
-      | 5 :: liste -> "blanc"^string_of_code liste
-      | 6 :: liste -> "cyan"^string_of_code liste;; (*paterne non exhaustif car les chiffres ne doivent pas pouvoir dépasser la limite*)
+      | 0 :: liste ->  "\027[31m ● "^string_of_code liste
+      | 1 :: liste ->  "\027[32m ● "^string_of_code liste
+      | 2 :: liste ->  "\027[34m ● "^string_of_code liste
+      | 3 :: liste ->  "\027[33m ● "^string_of_code liste
+      | 4 :: liste ->  "\027[35m ● "^string_of_code liste
+      | 5 :: liste ->  "\027[37m ● "^string_of_code liste
+      | 6 :: liste ->  "\027[36m ● "^string_of_code liste;;
   
   (** Transforme une couleur sous forme de string en numéro
    * @param la chaine de caractère décrivant une couleur
@@ -175,7 +174,8 @@ end = struct
    *)
   let rec fin_liste liste =
     match liste with
-    | v :: [] -> v (*paterne non exhaustif car il ne peut pas y avoir de liste vide en paramètre*)
+    | [] -> failwith "fin_liste"
+    | v :: [] -> v
     | v :: ls -> fin_liste ls;;
   
   let tous = let code = code_initial nombre_pions [] in
@@ -213,7 +213,7 @@ end = struct
    *)
   let rec nb_bonne_rep code1 code2 =
     match (code1,code2) with
-    | ([],[]) -> (0,[],[]) (*paterne non exhaustif car la validité du code est vérifié avant*)
+    | ([],[]) -> (0,[],[])
     | (a :: ls1,b :: ls2) -> let (x,y,z) = nb_bonne_rep ls1 ls2 in
                              if a = b then
                                (x+1,y,z)

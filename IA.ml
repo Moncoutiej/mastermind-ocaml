@@ -148,7 +148,7 @@ end = struct
                                                                            choix_knuth_rec_2 essais possibles ls res
                                                 | _ -> choix_knuth_rec_2 essais possibles ls (x,v);;
   
-  (** Choisie le prochain code à essayer, paterne non exhaustif car la fonction choix_knuth ne doit pas pouvoir arriver jusqu'a la fin de la liste
+  (** Choisie le prochain code à essayer
    * @param essais la liste courante des codes déjà essayé
    * @param possibles la liste courante des codes possibles
    * @param liste_tous la liste de tous les codes réalisable
@@ -156,6 +156,7 @@ end = struct
    *)
   let rec choix_knuth methode essais possibles liste_tous =
     match liste_tous with
+    | [] -> failwith "choix_knuth"
     | v :: ls when existe v essais -> choix_knuth methode essais possibles ls
     | v :: ls -> if methode = 1 then
                    choix_knuth_rec essais possibles ls ((poids_init v possibles), v)
@@ -165,7 +166,8 @@ end = struct
   let choix methode essais possibles =
     match methode with
     | 0 -> List.hd possibles 
-    | x when (x = 1) || (x = 2) -> (match possibles with (*paterne non exhaustif car la liste possible ne doit pas pouvoir être vide*)
+    | x when (x = 1) || (x = 2) -> (match possibles with
+                                    | [] -> failwith "choix"
                                     | v :: [] -> v
                                     | _ -> choix_knuth methode essais possibles Code.tous)
     | 3 -> List.nth possibles (Random.int (List.length possibles));;

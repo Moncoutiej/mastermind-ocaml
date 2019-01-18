@@ -23,19 +23,7 @@ module Affichage : sig
     
 end = struct
   
-  let rec afficher_code_rec code =
-    match code with (*paterne non exhaustif car la variable est comprise entre 0 et 7*)
-    | [] -> print_string "\027[37m"
-    | 0 :: liste -> print_string ("\027[31m ● ");afficher_code_rec liste
-    | 1 :: liste -> print_string ("\027[32m ● ");afficher_code_rec liste
-    | 2 :: liste -> print_string ("\027[34m ● ");afficher_code_rec liste
-    | 3 :: liste -> print_string ("\027[33m ● ");afficher_code_rec liste
-    | 4 :: liste -> print_string ("\027[35m ● ");afficher_code_rec liste
-    | 5 :: liste -> print_string ("\027[37m ● ");afficher_code_rec liste
-    | 6 :: liste -> print_string ("\027[36m ● ");afficher_code_rec liste;;
-  
-  
-  let afficher_code code = print_string "\027[37m |"; afficher_code_rec code; print_string "|";;
+  let afficher_code code = print_string ("\027[37m |"^Code.string_of_code code^"\027[37m|");;
   
   let afficher_reponse rep =
 	match rep with
@@ -55,7 +43,7 @@ end = struct
   
   
   let rec affiche_plusieurs_codes_et_reponses liste_codes liste_reponses = 
-    match (liste_codes,liste_reponses) with
+    match (liste_codes,liste_reponses) with (*paterne non exhaustif car ici les listes sont forcément de la même taille*)
     | ([[]],[]) -> print_string ""
     | (v1 :: liste1,v2 :: liste2) -> let res = affiche_plusieurs_codes_et_reponses liste1 liste2 in afficher_code v1;afficher_reponse v2;print_newline ();;
   
