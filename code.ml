@@ -43,8 +43,18 @@ end = struct
   type pion = int;;
   type t = pion list;;
   
+ (** demande à l'utilisateur le nombre de pions pour jouer
+   * @return le nombre de pions par code possibles supérieur à 1
+   si l'utilisateur ne rentre pas un nombre supérieur à 1, il lui est demandé de rerentrer son nombre
+   *)
+  let rec demande_utilisateur_pion = fun () -> let v = read_int (print_string "Entrez le nombre de pion possibles par code (supérieur à 0) :";print_newline ()) in
+                                          if v >= 1  then
+                                            v 
+                                          else
+                                            demande_utilisateur_pion () ;;
+
   let nombre_pions = let crlscr = Sys.command("clear") in 
-                     read_int (print_string "Entrez le nombre de pion par code :";print_newline ());;
+                     demande_utilisateur_pion ();;
   
   (** Crée une liste de 0 à (n-1)
    * @param nb la longueur de la liste voulue
@@ -64,17 +74,17 @@ end = struct
   let zero_jusque nb = zero_jusque_rec nb [];;
   
   (** demande à l'utilisateur le nombre de couleurs possibles
-   * @return le nombre de couleurs possibles entre 0 et 7,
-   si l'utilisateur ne rentre pas un nombre entre 0 et 7 il lui est demandé de rerentrer son nombre
+   * @return le nombre de couleurs possibles entre 1 et 7,
+   si l'utilisateur ne rentre pas un nombre entre 1 et 7 il lui est demandé de rerentrer son nombre
    *)
-  let rec demande_utilisateur = fun () -> let v = read_int (print_string "Entrez un nombre de couleurs possibles entre 0 et 7 :";print_newline ()) in
-                                          if v >= 0 && v <=7 then
+  let rec demande_utilisateur_couleur = fun () -> let v = read_int (print_string "Entrez un nombre de couleurs possibles entre 1 et 7 :";print_newline ()) in
+                                          if v >= 1 && v <=7 then
                                             v 
                                           else
-                                            demande_utilisateur () ;;
+                                            demande_utilisateur_couleur () ;;
   
   let couleurs_possibles = let crlscr = Sys.command("clear") in 
-                           zero_jusque (demande_utilisateur () );;
+                           zero_jusque (demande_utilisateur_couleur () );;
   
   (** Compare deux codes
    * @param code1 un code
